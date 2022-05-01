@@ -3,7 +3,7 @@ Rotation equivariance meets local feature matching
 
 ## Installation
 
-Follow steps in [here](./setup/README.md) to install the packages in a `conda` environment. You can check the packages are installed correctly by running:
+Follow steps in [here](./setup/README.md) to install the packages in a `conda` environment. You can check if the packages are installed correctly by running:
 ```bash
 python setup/check_packages.py
 ```
