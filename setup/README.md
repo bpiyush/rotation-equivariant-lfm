@@ -6,6 +6,7 @@
 conda create -y -n relfm python=3.9
 conda activate relfm
 conda install -y python tqdm pillow numpy matplotlib scipy
+pip install ipdb ipython jupyter jupyterlab
 pip install torch==1.9.0 torchvision==0.10.0 torchaudio==0.9.0
 
 # install kapture to manage datasets
