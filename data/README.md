@@ -53,6 +53,8 @@ rm -rf hpatches-sequences-release.tar.gz
 **Visualize**: Check out sample images from the dataset.
 ```bash
 (relfm) $ ipython
+```
+```python
 In [1]: %matplotlib inline
 In [2]: from PIL import Image
 In [3]: path = "~/datasets/hpatches-sequences-release/v_yard/1.ppm"
