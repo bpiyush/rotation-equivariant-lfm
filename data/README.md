@@ -42,11 +42,8 @@ However, since we need raw images, we need to download the dataset manually.
 ```bash
 # example: ~/datasets/
 cd /path/to/dataset/
-# wget http://icvl.ee.ic.ac.uk/vbalnt/hpatches/hpatches-release.tar.gz
 http://icvl.ee.ic.ac.uk/vbalnt/hpatches/hpatches-sequences-release.tar.gz
-# tar -xvf hpatches-release.tar.gz
 tar -xvf hpatches-sequences-release.tar.gz
-# rm -rf hpatches-release.tar.gz
 rm -rf hpatches-sequences-release.tar.gz
 ```
 
