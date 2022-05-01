@@ -36,7 +36,7 @@ kapture_download_dataset.py install Aachen-Day-Night-v1.1_query_night
 
 ### HPatches Dataset
 
-The official evaluation code is provided [here](https://github.com/hpatches/hpatches-dataset). Their evaluation scripts automatically download the dataset and convert it to the required format.
+The official evaluation code is provided [here](https://github.com/hpatches/hpatches-dataset). 
 
 However, since we need raw images, we need to download the dataset manually.
 ```bash
