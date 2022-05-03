@@ -8,6 +8,8 @@ the following steps are performed:
 
 ### Aachen Day Night v1.1
 
+> :warning: **Note**: Since the training is based on [R2D2](https://github.com/naver/r2d2), they recommend downloading manually instead of `kapture` as described [here](https://github.com/naver/r2d2#training-the-model).
+
 **Download**: Refer to [this tutorial](https://github.com/naver/kapture/blob/main/doc/tutorial.adoc#download-a-dataset) on Kapture for managing this dataset.
 
 ```bash
