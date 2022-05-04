@@ -8,6 +8,7 @@ packages_to_check = [
     "torchvision",
     "tqdm",
     "kapture",
+    "cv2"
 ]
 for package in packages_to_check:
     print("Checking package: {}".format(package))
