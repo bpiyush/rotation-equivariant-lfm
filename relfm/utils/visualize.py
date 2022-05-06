@@ -1,5 +1,6 @@
 """Helpers for visualization"""
 import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
 import cv2
 
@@ -40,13 +41,28 @@ def show_grid_of_images(
 def show_keypoint_matches(
         img1, kp1, img2, kp2, matches,
         K=10, figsize=(10, 5), drawMatches_args=dict(matchesThickness=3, singlePointColor=(0, 0, 0)),
+        choose_matches="random",
     ):
     """Displays matches found in the pair of images"""
-    selected_matches = np.random.choice(matches, K)
+    if choose_matches == "random":
+        selected_matches = np.random.choice(matches, K)
+    elif choose_matches == "all":
+        K = len(matches)
+        selected_matches = matches
+    elif choose_matches == "topk":
+        selected_matches = matches[:K]
+    else:
+        raise ValueError(f"Unknown value for choose_matches: {choose_matches}")
+
+    # color each match with a different color
+    cmap = matplotlib.cm.get_cmap('gist_rainbow', K)
+    colors = [[int(x*255) for x in cmap(i)[:3]] for i in np.arange(0,K)]
+    drawMatches_args.update({"matchColor": -1, "singlePointColor": (100, 100, 100)})
+    
     img3 = cv2.drawMatches(img1, kp1, img2, kp2, selected_matches, outImg=None, **drawMatches_args)
     show_single_image(
         img3,
         figsize=figsize,
-        title=f"Randomly selected K = {K} matches between the pair of images.",
+        title=f"[{choose_matches.upper()}] Selected K = {K} matches between the pair of images.",
     )
     return img3
