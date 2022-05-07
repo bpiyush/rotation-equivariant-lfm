@@ -43,7 +43,7 @@ kapture_download_dataset.py install Aachen-Day-Night-v1.1_query_night
 ```bash
 # example: ~/datasets/
 cd /path/to/dataset/
-http://icvl.ee.ic.ac.uk/vbalnt/hpatches/hpatches-sequences-release.tar.gz
+wget http://icvl.ee.ic.ac.uk/vbalnt/hpatches/hpatches-sequences-release.tar.gz
 tar -xvf hpatches-sequences-release.tar.gz
 rm -rf hpatches-sequences-release.tar.gz
 ```
