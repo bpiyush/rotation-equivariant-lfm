@@ -11,3 +11,13 @@ python setup/check_packages.py
 ## Datasets
 
 Follow steps in [here](./data/README.md) to download and prepare the datasets. A dataset summary table is provided below.
+
+## Getting started
+
+```bash
+# activate the environment
+conda activate relfm-v1.0
+
+# set the python path
+export PYTHONPATH=$PWD/lib/r2d2/:$PWD
+```
