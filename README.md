@@ -36,7 +36,8 @@ Follow steps in [here](./data/README.md) to download and prepare the datasets. A
     This will download all required datasets to `/path/to/root/data/folder/`. Note that we symlink this root data folder
     to `$PWD/data/` through the script, i.e., you can checkout data folder directly from `$PWD/data/`.
 3. Note that the repo comes with R2D2 code in `lib/r2d2`. So no need to download the code.
-4. Training R2D2. Modify the `jobscripts/r2d2_training.job` file to run on your machine. For e.g., you can change the save path   `--save-path /home/lcur1325/models/r2d2-sample/model.pt` as per your preference. You can check the status of your job via the slurm output file.
+4. Training R2D2. Modify the `jobscripts/r2d2_training.job` file to run on your machine. For e.g., you can change the save path   `--save-path /home/lcur1325/models/r2d2-sample/model.pt` as per your preference. 
     ```bash
     sbatch jobscripts/r2d2_training.job
     ```
+    You can check the status of your job via the slurm output file. You check job status via `squeue | grep $USER`.
