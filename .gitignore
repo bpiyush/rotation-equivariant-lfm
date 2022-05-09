@@ -8,6 +8,9 @@ slurm_output_*.out
 *.pt
 *.npy
 
+# Do not ignore R2D2 folder
+!lib/r2d2/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
