@@ -40,4 +40,4 @@ Follow steps in [here](./data/README.md) to download and prepare the datasets. A
     ```bash
     sbatch jobscripts/r2d2_training.job
     ```
-    You can check the status of your job via the slurm output file. You check job status via `squeue | grep $USER`.
+    You can check the progress of your job via the slurm output file. You check job status via `squeue | grep $USER`.
