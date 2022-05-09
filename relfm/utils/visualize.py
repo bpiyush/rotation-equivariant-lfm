@@ -5,14 +5,17 @@ import matplotlib.pyplot as plt
 import cv2
 
 
-def show_single_image(image: np.ndarray, figsize: tuple = (8, 8), title: str = None, cmap: str = None):
+def show_single_image(image: np.ndarray, figsize: tuple = (8, 8), title: str = None, cmap: str = None, ticks=False):
     """Show a single image."""
     fig, ax = plt.subplots(1, 1, figsize=figsize)
 
     ax.set_title(title)
     ax.imshow(image, cmap=cmap)
-    ax.set_xticks([])
-    ax.set_yticks([])
+    
+    if not ticks:
+        ax.set_xticks([])
+        ax.set_yticks([])
+
     plt.show()
 
 
