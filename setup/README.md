@@ -1,6 +1,10 @@
 ## Installation
 
+We use `conda` environment manager to install the packages. Depending on your machine, you may create a new environment.
+
 ### CPU Version
+
+Please follow these steps one-by-one:
 
 ```bash
 conda create -y -n relfm python=3.9
