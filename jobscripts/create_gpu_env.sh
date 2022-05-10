@@ -17,8 +17,8 @@ module load Anaconda3/2021.05
 echo "Creating an environment named 'relfm-v1.0'..."
 echo "----------------------------------------"
 conda create -y -n relfm-v1.0 python=3.9
-conda activate relfm-v1.0
-# conda install -y tqdm pillow numpy matplotlib scipy
-# pip install ipdb ipython jupyter jupyterlab gdown
-# pip install torch==1.8.1+cu101 torchvision==0.9.1+cu101 torchaudio==0.8.1 -f https://download.pytorch.org/whl/torch_stable.html
+source activate relfm-v1.0
+conda install -y tqdm pillow numpy matplotlib scipy
+pip install ipdb ipython jupyter jupyterlab gdown
+pip install torch==1.8.1+cu101 torchvision==0.9.1+cu101 torchaudio==0.8.1 -f https://download.pytorch.org/whl/torch_stable.html
 echo "----------------------------------------"
