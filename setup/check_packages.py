@@ -7,7 +7,6 @@ packages_to_check = [
     "torch",
     "torchvision",
     "tqdm",
-    "kapture",
     "cv2"
 ]
 for package in packages_to_check:
