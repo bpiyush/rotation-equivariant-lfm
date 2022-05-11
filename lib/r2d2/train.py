@@ -80,6 +80,7 @@ if __name__ == '__main__':
 
     parser.add_argument("--pretrained", type=str, default="", help='pretrained model path')
     parser.add_argument("--save-path", type=str, required=True, help='model save_path path')
+    parser.add_argument("--save-every", type=int, default=1, help='save model every n epochs')
     
     parser.add_argument("--loss", type=str, default=default_loss, help="loss function")
     parser.add_argument("--sampler", type=str, default=default_sampler, help="AP sampler")
@@ -129,8 +130,17 @@ if __name__ == '__main__':
 
     # Training loop #
     for epoch in range(args.epochs):
+
         print(f"\n>> Starting epoch {epoch}...")
         train()
+
+        # save net after every n epochs
+        if epoch % args.save_every == 0:
+            print(f"\n>> Saving model at epoch {epoch}...")
+            # modify save path to add epoch number
+            filename = os.path.basename(args.save_path)
+            save_path = args.save_path.replace(filename, f'epoch_{epoch}_{filename}')
+            torch.save({'net': args.net, 'state_dict': net.state_dict()}, save_path)
 
     print(f"\n>> Saving model to {args.save_path}")
     torch.save({'net': args.net, 'state_dict': net.state_dict()}, args.save_path)
