@@ -1,19 +1,52 @@
 import torch
+from tqdm import tqdm
 import numpy as np
 from escnn import *
 from mnist import MnistDataset, test_model_single_image
 
 
 class CNSteerableL2(torch.nn.Module):
-    def __init__(self, n_rotations=4, n_classes=10):
+    def __init__(self, n_rotations=4, n_hidden=64, n_classes=10):
         super(CNSteerableL2, self).__init__()
+        self.r2_act = gspaces.rot2dOnR2(N=n_rotations)
+        in_type = nn.FieldType(self.r2_act, [self.r2_act.trivial_repr])
+        self.input_type = in_type
+        self.mask = nn.MaskModule(in_type, 29, margin=1)
+
+        activation1 = nn.ELU(nn.FieldType(self.r2_act, 8 * [self.r2_act.regular_repr]), inplace=True)
+        out_type = activation1.in_type
+        self.block = nn.SequentialModule(
+            nn.R2Conv(in_type, out_type, kernel_size=7, padding=1, bias=False),
+            nn.IIDBatchNorm2d(out_type),
+            activation1,
+        )
+
+        self.pool = nn.PointwiseAvgPoolAntialiased(out_type, sigma=0.66, stride=1, padding=0)
+
+        output_invariant_type = nn.FieldType(self.r2_act, n_hidden * [self.r2_act.trivial_repr])
+        self.invariant_map = nn.R2Conv(out_type, output_invariant_type, kernel_size=1, bias=False)
+        self.fully_net = torch.nn.Sequential(
+            torch.nn.BatchNorm1d(n_hidden),
+            torch.nn.ELU(inplace=True),
+            torch.nn.Linear(n_hidden, n_classes),
+        )
 
     def forward(self, x):
-        # Random prediction
-        num_points = x.shape[1]
-        pred = torch.rand((num_points, 10))
-        pred = torch.nn.functional.softmax(pred, dim=1)
-        return pred
+        x = self.input_type(input)
+        x = self.mask(x)
+
+        # Convolutions
+        x = self.block(x)
+        x = self.pool(x)
+
+        # Final pool
+        x = self.invariant_map(x)
+        x = x.tensor
+
+        # Prediction
+        x = self.fully_net(x.reshape(x.shape[0], -1))
+
+        return x
 
 
 class CNSteerableCNN(torch.nn.Module):
@@ -169,6 +202,7 @@ class CNSteerableCNN(torch.nn.Module):
 
 if __name__ == '__main__':
     # build the rotated training and test datasets
+
     mnist_train = MnistDataset(mode='train', rotated=True)
     train_loader = torch.utils.data.DataLoader(mnist_train, batch_size=64)
 
@@ -181,5 +215,29 @@ if __name__ == '__main__':
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     c4_l2 = CNSteerableL2(n_rotations=4, n_classes=10).to(device)
 
-    x, y = next(iter(raw_mnist_test))
-    test_model_single_image(c4_l2, x, device, N=4)
+    # x, y = next(iter(raw_mnist_test))
+    # print(type(x))
+    # test_model_single_image(c4_l2, x, device, N=24)
+    #
+    # raise
+
+    # Train
+    epochs = 2
+    loss_function = torch.nn.CrossEntropyLoss()
+    optimizer = torch.optim.Adam(c4_l2.parameters(), lr=5e-4, weight_decay=1e-8)
+
+    for epoch in tqdm(range(epochs)):
+        c4_l2.train()
+        for i, (x, label) in enumerate(train_loader):
+            optimizer.zero_grad()
+
+            x = x.to(device)
+            label = label.to(device)
+            pred = c4_l2(x)
+
+            loss = loss_function(label, pred)
+            loss.backward()
+
+            optimizer.step()
+
+
