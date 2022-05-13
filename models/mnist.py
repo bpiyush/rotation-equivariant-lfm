@@ -1,16 +1,15 @@
 import torch
 from torch.utils.data import Dataset
-from torchvision.transforms import RandomRotation
 from torchvision.transforms import Pad
 from torchvision.transforms import Resize
 from torchvision.transforms import ToTensor
-from torchvision.transforms import Compose
 from tqdm.auto import tqdm
 from PIL import Image
 import numpy as np
 
 
 class MnistDataset(Dataset):
+    """MNIST Dataset - class borrowed from Notebook by Gabrielle"""
     def __init__(self, mode, rotated: bool = True):
         assert mode in ['train', 'test']
 
@@ -57,37 +56,11 @@ class MnistDataset(Dataset):
         return len(self.labels)
 
 
-def test_model_single_image(model, x, y, device, N=8):
-    np.set_printoptions(linewidth=10000)
+def generate_loaders(batch_size=64):
+    mnist_train = MnistDataset(mode='train', rotated=True)
+    mnist_test = MnistDataset(mode='test', rotated=True)
 
-    x = Image.fromarray(x.cpu().numpy()[0], mode='F')
+    train_loader = torch.utils.data.DataLoader(mnist_train, batch_size=batch_size)
+    test_loader = torch.utils.data.DataLoader(mnist_test, batch_size=batch_size)
 
-
-    # to reduce interpolation artifacts (e.g. when testing the model on rotated images),
-    # we upsample an image by a factor of 3, rotate it and finally downsample it again
-    resize1 = Resize(87) # to upsample
-    resize2 = Resize(29) # to downsample
-
-    totensor = ToTensor()
-
-    x = resize1(x)
-
-    # evaluate the `model` on N rotated versions of the input image `x`
-    model.eval()
-
-    print()
-    print('##########################################################################################')
-    header = 'angle  |  ' + '  '.join(["{:5d}".format(d) for d in range(10)])
-    print(header)
-    with torch.no_grad():
-        for r in range(N):
-            x_transformed = totensor(resize2(x.rotate(r*360./N, Image.BILINEAR))).reshape(1, 1, 29, 29)
-            x_transformed = x_transformed.to(device)
-
-            y = model(x_transformed)
-            y = y.to('cpu').numpy().squeeze()
-
-            angle = r * 360. / N
-            print("{:6.1f} : {}".format(angle, y))
-    print('##########################################################################################')
-    print()
+    return train_loader, test_loader
