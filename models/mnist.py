@@ -57,7 +57,7 @@ class MnistDataset(Dataset):
         return len(self.labels)
 
 
-def test_model_single_image(model: torch.nn.Module, x: torch.Tensor, device, N: int = 8):
+def test_model_single_image(model, x, y, device, N=8):
     np.set_printoptions(linewidth=10000)
 
     x = Image.fromarray(x.cpu().numpy()[0], mode='F')
