@@ -57,10 +57,7 @@ class MnistDataset(Dataset):
 
 
 def generate_loaders(batch_size=64):
-    mnist_train = MnistDataset(mode='train', rotated=True)
-    mnist_test = MnistDataset(mode='test', rotated=True)
+    mnist_data = MnistDataset(mode='train', rotated=True)
+    mnist_loader = torch.utils.data.DataLoader(mnist_data, batch_size=batch_size)
 
-    train_loader = torch.utils.data.DataLoader(mnist_train, batch_size=batch_size)
-    test_loader = torch.utils.data.DataLoader(mnist_test, batch_size=batch_size)
-
-    return train_loader, test_loader
+    return mnist_loader

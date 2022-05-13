@@ -1,14 +1,13 @@
 import torch
 import argparse
-from tqdm import tqdm
 from escnn import *
 from mnist import generate_loaders
 from steerable_l2 import SteerableL2
-from train import train, test
 
 
 def main(args):
-    train_loader, test_loader = generate_loaders(args.batch_size)
+    mnist_loader = generate_loaders(args.batch_size)
+
     if args.group == 'cn':
         r2_act = gspaces.rot2dOnR2(N=args.num_rotations)
         fourier = False
@@ -20,17 +19,12 @@ def main(args):
 
     model = SteerableL2(r2_act, fourier=fourier).to(args.device)
 
-    loss_function = torch.nn.CrossEntropyLoss()
-    optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
-
-    for _ in tqdm(range(args.epochs)):
-        model.train()
-        train(model, train_loader, loss_function, optimizer, args.device)
-        model.eval()
-        test_score = test(model, test_loader, args.device)
-        print('Intermediate test score:', test_score)
-
-    print(f'Final test score: {test_score}')
+    for i, (imgs, label) in enumerate(mnist_loader):
+        imgs = imgs.to(args.device)
+        features = model(imgs)
+        print(f'Images shape: {imgs.shape}')
+        print(f'Features shape: {features.shape}')
+        exit()
 
 
 if __name__ == '__main__':
@@ -44,7 +38,7 @@ if __name__ == '__main__':
                         help='learning rate')
     parser.add_argument('--weight_decay', type=float, default=1e-8,
                         help='weight_decay')
-    parser.add_argument('--batch_size', type=int, default=64,
+    parser.add_argument('--batch_size', type=int, default=4,
                         help='batch size')
     parser.add_argument('--epochs', type=int, default=20,
                         help='epochs')
