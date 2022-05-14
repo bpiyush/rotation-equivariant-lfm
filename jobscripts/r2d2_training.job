@@ -5,7 +5,7 @@
 #SBATCH --job-name=R2D2
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=2
-#SBATCH --time=24:00:00
+#SBATCH --time=48:00:00
 #SBATCH --mem=32000M
 #SBATCH --output=slurm_output_%A.out
 
@@ -21,4 +21,5 @@ source activate relfm-v1.0
 # repo="$( cd -- "$(dirname $(dirname "$0"))" >/dev/null 2>&1 ; pwd -P )"
 save_dir=/home/$USER/models/r2d2-sample/
 mkdir -p $save_dir
-python ./lib/r2d2/train.py --save-path $save_dir/model.pt
+# python ./lib/r2d2/train.py --save-path $save_dir/model.pt
+python ./lib/r2d2/train.py --save-path $save_dir/pretrained_from_23_model.pt --pretrained $save_dir/epoch_23_model.pt --epochs 2

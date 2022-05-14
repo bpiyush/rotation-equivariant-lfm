@@ -114,7 +114,8 @@ if __name__ == '__main__':
     # initialization
     if args.pretrained:
         checkpoint = torch.load(args.pretrained, lambda a,b:a)
-        net.load_pretrained(checkpoint['state_dict'])
+        # net.load_pretrained(checkpoint['state_dict'])
+        net.load_state_dict(checkpoint['state_dict'])
         
     # create losses
     loss = args.loss.replace('`sampler`',args.sampler).replace('`N`',str(args.N))
