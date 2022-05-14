@@ -3,11 +3,26 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 import cv2
+from PIL import Image
+
+
+# define predominanat colors
+COLORS = {
+    "pink": (242, 116, 223),
+    "cyan": (46, 242, 203),
+    "red": (255, 0, 0),
+    "green": (0, 255, 0),
+    "blue": (0, 0, 255),
+    "yellow": (255, 255, 0),
+}
 
 
 def show_single_image(image: np.ndarray, figsize: tuple = (8, 8), title: str = None, cmap: str = None, ticks=False):
     """Show a single image."""
     fig, ax = plt.subplots(1, 1, figsize=figsize)
+
+    if isinstance(image, Image.Image):
+        image = np.asarray(image)
 
     ax.set_title(title)
     ax.imshow(image, cmap=cmap)
@@ -24,6 +39,12 @@ def show_grid_of_images(
         cmap=None, subtitles=None, title=None,
     ):
     """Show a grid of images."""
+
+    copy_of_images = images.copy()
+    for i, image in enumerate(copy_of_images):
+        if isinstance(image, Image.Image):
+            image = np.asarray(image)
+            images[i] = image
     
     if subtitles is None:
         subtitles = [None] * len(images)
@@ -69,3 +90,24 @@ def show_keypoint_matches(
         title=f"[{choose_matches.upper()}] Selected K = {K} matches between the pair of images.",
     )
     return img3
+
+
+def draw_kps_on_image(image: np.ndarray, kps: np.ndarray, color=COLORS["red"], radius=3, thickness=-1, return_as="numpy"):
+    """
+    Draw keypoints on image.
+
+    Args:
+        image: Image to draw keypoints on.
+        kps: Keypoints to draw. Note these should be in (x, y) format.
+    """
+    if isinstance(image, Image.Image):
+        image = np.asarray(image)
+
+    for kp in kps:
+        image = cv2.circle(
+            image, (int(kp[0]), int(kp[1])), radius=radius, color=color, thickness=thickness)
+    
+    if return_as == "PIL":
+        return Image.fromarray(image)
+
+    return image

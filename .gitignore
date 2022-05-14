@@ -140,3 +140,6 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+models/mnist/mnist_test.amat
+models/mnist/mnist_train.amat
+*.amat
