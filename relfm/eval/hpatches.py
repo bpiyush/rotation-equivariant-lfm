@@ -49,7 +49,11 @@ if __name__ == "__main__":
             img2_path = join(sequence, f"{i}.ppm")
             H_path = join(sequence, f"H_1_{i}")
 
+            rotation = 30
+
             img2 = Image.open(img2_path)
+            img2 = img2.rotate(rotation)
+
             H = np.loadtxt(H_path)
 
             # extract keypoints and descriptors for both images
