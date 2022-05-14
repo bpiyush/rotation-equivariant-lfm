@@ -54,3 +54,55 @@ def get_2D_rotation_matrix(rotation_in_deg):
         [np.sin(rotation_in_rad), np.cos(rotation_in_rad)],
     ])
     return R
+
+
+def append_rotation_to_homography(H, rotation, width, height):
+    """
+    Appends (anticlockwise) rotation to homography.
+
+    Args:
+        H (np.ndarray): Homography matrix.
+        rotation (int): Rotation angle in degrees.
+        width (int): (Target) Image width.
+        height (int): (Target) Image height.
+    """
+
+    # define the coordinates of the center of the image
+    cx, cy = width / 2., height / 2.
+
+    # define translation matrix to move origin to the center of the image
+    T_topleft_to_center = np.array([
+        [1, 0, -cx],
+        [0, 1, -cy],
+        [0, 0, 1],
+    ])
+
+    # define the rotation matrix
+    R2D = get_2D_rotation_matrix(rotation)
+    R = np.eye(3)
+    R[:2, :2] = R2D
+
+    # define translation matrix to move origin to the top-left corner
+    T_center_to_topleft = np.array([
+        [1, 0, cx],
+        [0, 1, cy],
+        [0, 0, 1],
+    ])
+
+    # # get 2D rotation matrix
+    # R2D = get_2D_rotation_matrix(rotation)
+
+    # # construct homography from given 2D rotation matrix
+    # HR = np.eye(3)
+    # HR[:2, :2] = R2D
+
+    # # define the center of the image
+    # C0 = np.array([width / 2., height / 2.])
+
+    # # add the correction translation factor
+    # t = (np.eye(2) - R2D) @ C0
+    # HR[:2, 2] = t
+
+    # return the final composed homography
+    H_combined = H @ T_topleft_to_center @ R @ T_center_to_topleft
+    return H_combined

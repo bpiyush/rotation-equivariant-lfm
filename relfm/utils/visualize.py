@@ -39,6 +39,7 @@ def show_grid_of_images(
         cmap=None, subtitles=None, title=None,
     ):
     """Show a grid of images."""
+    n_cols = min(n_cols, len(images))
 
     copy_of_images = images.copy()
     for i, image in enumerate(copy_of_images):
@@ -111,3 +112,19 @@ def draw_kps_on_image(image: np.ndarray, kps: np.ndarray, color=COLORS["red"], r
         return Image.fromarray(image)
 
     return image
+
+
+def get_concat_h(im1, im2):
+    """Concatenate two images horizontally"""
+    dst = Image.new('RGB', (im1.width + im2.width, im1.height))
+    dst.paste(im1, (0, 0))
+    dst.paste(im2, (im1.width, 0))
+    return dst
+
+
+def get_concat_v(im1, im2):
+    """Concatenate two images vertically"""
+    dst = Image.new('RGB', (im1.width, im1.height + im2.height))
+    dst.paste(im1, (0, 0))
+    dst.paste(im2, (0, im1.height))
+    return dst
