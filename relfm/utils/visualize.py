@@ -128,3 +128,16 @@ def get_concat_v(im1, im2):
     dst.paste(im1, (0, 0))
     dst.paste(im2, (0, im1.height))
     return dst
+
+
+def show_images_with_keypoints(images: list, kps: list, radius=15, color=(0, 220, 220), figsize=(10, 8)):
+    assert len(images) == len(kps)
+
+    # generate
+    images_with_kps = []
+    for i in range(len(images)):
+        img_with_kps = draw_kps_on_image(images[i], kps[i], radius=radius, color=color, return_as="PIL")
+        images_with_kps.append(img_with_kps)
+    
+    # show
+    show_grid_of_images(images_with_kps, n_cols=len(images), figsize=figsize)

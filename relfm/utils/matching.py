@@ -161,13 +161,13 @@ def evaluate_matching_with_rotation(
     return result
 
 
-def analyze_result(img1: Image.Image, img2: Image.Image, result):
+def analyze_result(img1: Image.Image, img2: Image.Image, result, match_thickness: int = 2, K=100, radius=5):
     """Visualizes matching result for given pair of images."""
 
     width, height = img1.size
 
     rotation = result['rotation']
-    img2 = img2.rotate(rotation)
+    # img2 = img2.rotate(rotation)
 
     kp1_matched = result["kp1_matched"]
     kp2_matched = result["kp2_matched"]
@@ -175,13 +175,13 @@ def analyze_result(img1: Image.Image, img2: Image.Image, result):
 
     # add keypoints to images
     img1_with_kps = draw_kps_on_image(
-        img1, kp1_matched, color=COLORS["blue"], radius=15, return_as="PIL",
+        img1, kp1_matched, color=COLORS["blue"], radius=radius, return_as="PIL",
     )
     img2_with_kps = draw_kps_on_image(
-        img2, kp2_matched, color=COLORS["blue"], radius=15, return_as="PIL",
+        img2, kp2_matched, color=COLORS["blue"], radius=radius, return_as="PIL",
     )
     img2_with_kps = draw_kps_on_image(
-        img2_with_kps, kp2_gt, thickness=2, color=COLORS["yellow"], radius=15, return_as="PIL",
+        img2_with_kps, kp2_gt, thickness=2, color=COLORS["yellow"], radius=radius, return_as="PIL",
     )
 
     # draw green lines for correct matches and red for incorrect matches
@@ -194,11 +194,12 @@ def analyze_result(img1: Image.Image, img2: Image.Image, result):
     match_colors = [get_match_color(x) for x in result["good_match_flag"]]
 
     img = get_concat_h(img1_with_kps, img2_with_kps)
-    for i in range(kp1_matched.shape[0]):
+    selected_match_indices = np.random.choice(np.arange(len(kp1_matched)), K, replace=False)
+    for i in selected_match_indices:
         (x1, y1) = int(kp1_matched[i][0]), int(kp1_matched[i][1])
         (x2, y2) = width + int(kp2_matched[i][0]), int(kp2_matched[i][1])
 
-        img = cv2.line(np.asarray(img), (x1, y1), (x2, y2), match_colors[i], thickness=3)
+        img = cv2.line(np.asarray(img), (x1, y1), (x2, y2), match_colors[i], thickness=match_thickness)
         img = Image.fromarray(img)
     
     # show the final image
