@@ -20,7 +20,7 @@ def model_size(model):
     return size
 
 
-def torch_set_gpu(gpus):
+def torch_set_gpu(gpus, verbose=True):
     if type(gpus) is int:
         gpus = [gpus]
 
@@ -32,10 +32,10 @@ def torch_set_gpu(gpus):
             os.environ['HOSTNAME'],os.environ['CUDA_VISIBLE_DEVICES'])
         torch.backends.cudnn.benchmark = True # speed-up cudnn
         torch.backends.cudnn.fastest = True # even more speed-up?
-        print( 'Launching on GPUs ' + os.environ['CUDA_VISIBLE_DEVICES'] )
+        if verbose: print( 'Launching on GPUs ' + os.environ['CUDA_VISIBLE_DEVICES'] )
 
     else:
-        print( 'Launching on CPU' )
+        if verbose: print( 'Launching on CPU' )
 
     return cuda
 

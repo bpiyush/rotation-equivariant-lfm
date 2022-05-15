@@ -161,13 +161,14 @@ def evaluate_matching_with_rotation(
     return result
 
 
-def analyze_result(img1: Image.Image, img2: Image.Image, result, match_thickness: int = 2, K=100, radius=5):
+def analyze_result(img1: Image.Image, img2: Image.Image, result, match_thickness: int = 1, K=100, radius=1):
     """Visualizes matching result for given pair of images."""
+
+    K = min(K, result["matches"].shape[0])
 
     width, height = img1.size
 
     rotation = result['rotation']
-    # img2 = img2.rotate(rotation)
 
     kp1_matched = result["kp1_matched"]
     kp2_matched = result["kp2_matched"]
@@ -181,7 +182,7 @@ def analyze_result(img1: Image.Image, img2: Image.Image, result, match_thickness
         img2, kp2_matched, color=COLORS["blue"], radius=radius, return_as="PIL",
     )
     img2_with_kps = draw_kps_on_image(
-        img2_with_kps, kp2_gt, thickness=2, color=COLORS["yellow"], radius=radius, return_as="PIL",
+        img2_with_kps, kp2_gt, color=COLORS["yellow"], radius=radius, return_as="PIL",
     )
 
     # draw green lines for correct matches and red for incorrect matches

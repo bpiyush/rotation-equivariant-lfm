@@ -178,17 +178,19 @@ def extract_keypoints_modified(
         reliability_thr=0.7,
         repeatability_thr=0.7,
         gpu=[0],
+        verbose=False,
     ):
     """Extracts keypoints for a given list of images.
 
     Args:
         args (dict): arguments
         images (list): list of PIL.Image.Image objects.
-        model (str): path to the model
+        model (str): path to the model or the actual model
         reliability_thr (float, optional): _description_. Defaults to 0.7.
         repeatability_thr (float, optional): _description_. Defaults to 0.7.
         gpu (list, optional): _description_. Defaults to [0].
         return_output (bool, optional): _description_. Defaults to False.
+        verbose (bool, optional): whether to print outputs. Defaults to False.
 
     Returns:
         list: list of dicts with keypoints, descriptors, scores and imsize.
@@ -199,12 +201,18 @@ def extract_keypoints_modified(
         gpu = -1
     
     # iscuda = common.torch_set_gpu(args.gpu)
-    iscuda = common.torch_set_gpu(gpu)
+    iscuda = common.torch_set_gpu(gpu, verbose=verbose)
 
     # load the network...
-    # check if model exists
-    assert os.path.exists(model), f"model does not exist at {model}"
-    net = load_network(model)
+    if isinstance(model, str):
+        # check if model exists
+        assert os.path.exists(model), f"model does not exist at {model}"\
+            "Note that you have passed model as a path to the model file."
+        net = load_network(model)
+    else:
+        # assume it is a network
+        net = model
+
     if iscuda: net = net.cuda()
 
     # create the non-maxima detector
@@ -235,7 +243,7 @@ def extract_keypoints_modified(
             max_scale = max_scale,
             min_size  = min_size, 
             max_size  = max_size, 
-            verbose = True)
+            verbose = verbose)
 
         xys = xys.cpu().numpy()
         desc = desc.cpu().numpy()

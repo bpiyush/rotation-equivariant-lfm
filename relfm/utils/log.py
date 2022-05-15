@@ -1,5 +1,6 @@
 """Utilities for logging"""
 import logging
+from tqdm import tqdm
 from termcolor import colored
 
 
@@ -42,3 +43,15 @@ def set_logger(log_path):
         stream_handler = logging.StreamHandler()
         stream_handler.setFormatter(logging.Formatter('%(message)s'))
         logger.addHandler(stream_handler)
+
+
+def tqdm_iterator(items, desc=None, bar_format=None, **kwargs):
+    tqdm._instances.clear()
+    iterator = tqdm(
+        items,
+        desc=desc,
+        bar_format='{l_bar}{bar:10}{r_bar}{bar:-10b}',
+        **kwargs,
+    )
+    
+    return iterator
