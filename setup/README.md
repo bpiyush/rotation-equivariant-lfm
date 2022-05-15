@@ -59,3 +59,13 @@ Then, run the jobscript again.
 ```bash
 sbatch jobscripts/create_gpu_env.job
 ```
+
+
+> Tip: To use the conda environment on the login node, you will need to run the following commands before activating the environment:
+
+```bash
+module purge
+module load 2021
+module load Anaconda3/2021.05
+conda activate relfm-v1.0
+```

@@ -133,6 +133,7 @@ def evaluate_matching_with_rotation(
 
     # add rotation to H
     H_combined = append_rotation_to_homography(H, rotation, width, height)
+    # H_combined = H
 
     # project kp1 onto image 2 using homography
     kp2_ground_truth = apply_homography_to_keypoints(kp1, H_combined)

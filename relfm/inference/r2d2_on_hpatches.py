@@ -66,6 +66,11 @@ if __name__ == "__main__":
         default=300,
         help="Size of the images to be used for the evaluation.",
     )
+    parser.add_argument(
+        "--seq_prefix", "-s", type=str,
+        default=None,
+        help="Prefix of the sequence to be used for the evaluation.",
+    )
     args = parser.parse_args()
 
     assert isdir(args.data_dir), \
@@ -83,13 +88,18 @@ if __name__ == "__main__":
     print_update("Loading network.")
     model = load_network(args.model_ckpt_path)
 
-    sequences = glob(join(args.data_dir, "*"))
+    sequences = sorted(glob(join(args.data_dir, "*")))
+    if args.seq_prefix is not None:
+        sequences = [s for s in sequences if args.seq_prefix in s]
     rotations = np.arange(0, 360 + 1, args.gap_between_rotations, dtype=int)
     print_update(f"Generating predictions on {len(sequences)} sequences for {len(rotations)} rotations per image.")
+    counter = 1
     for sequence in sequences:
         # set path to the source image
         img1_path = join(sequence, "1.ppm")
-        img1 = Image.open(img1_path).resize((args.imsize, args.imsize))
+        img1 = Image.open(img1_path)
+        original_width, original_height = img1.size
+        # img1 = img1.resize((args.imsize, args.imsize))
 
         # generate outputs for source image
         outputs = extract_keypoints_modified([img1], model, top_k=args.num_keypoints, verbose=False)[0]
@@ -103,7 +113,8 @@ if __name__ == "__main__":
         # possible indices of the target images
         img2_indices = np.arange(2, 7)
         # load all target images at once
-        img2s = [Image.open(join(sequence, f"{i}.ppm")).resize((args.imsize, args.imsize)) for i in img2_indices]
+        # img2s = [Image.open(join(sequence, f"{i}.ppm")).resize((args.imsize, args.imsize)) for i in img2_indices]
+        img2s = [Image.open(join(sequence, f"{i}.ppm")) for i in img2_indices]
 
         # load all homographies
         Hs = [np.loadtxt(join(sequence, f"H_1_{i}")) for i in img2_indices]
@@ -117,7 +128,18 @@ if __name__ == "__main__":
             img2 = img2s[img2_index - 2]
             img2_rotated = img2.rotate(rotation)
 
-            H = Hs[img2_index - 2]
+            H = Hs[img2_index - 2].copy()
+
+            # # apply resing effect on H
+            # sx = args.imsize / original_width
+            # sy = args.imsize / original_height
+
+            # H_for_scaling = np.array([
+            #     [sx, 0., 0.],
+            #     [0., sy, 0.],
+            #     [0., 0., 1.],
+            # ])
+            # H = H_for_scaling @ Hs[img2_index - 2]
 
             outputs = extract_keypoints_modified([img2_rotated], model, top_k=args.num_keypoints, verbose=False)[0]
             outputs.update(
@@ -131,5 +153,8 @@ if __name__ == "__main__":
             save_path = join(save_dir, sequence_name, f"{img2_index}_rotation_{rotation}.npy")
             np.save(save_path, outputs)
         
+        print(f"Finished processing sequence {sequence_name} ({counter}/{len(sequences)}).")
+        counter += 1 
+
         if args.debug:
             break
