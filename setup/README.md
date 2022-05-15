@@ -47,3 +47,15 @@ For e.g., using CUDA 10.1, use:
 pip install torch==1.8.1+cu101 torchvision==0.9.1+cu101 torchaudio==0.8.1 -f https://download.pytorch.org/whl/torch_stable.html
 ```
  -->
+
+## Updating the environment
+
+Suppose you want to install an additional package, say `termcolor`, you need to add it to the jobscript and run it again.
+```bash
+(old) pip install .....some packages.....
+(new) pip install .....some packages..... termcolor
+```
+Then, run the jobscript again.
+```bash
+sbatch jobscripts/create_gpu_env.job
+```
