@@ -104,5 +104,6 @@ def append_rotation_to_homography(H, rotation, width, height):
     # HR[:2, 2] = t
 
     # return the final composed homography
-    H_combined = H @ T_topleft_to_center @ R @ T_center_to_topleft
+    # H_combined = H @ T_topleft_to_center @ R @ T_center_to_topleft
+    H_combined = T_center_to_topleft @ R @ T_topleft_to_center @ H 
     return H_combined

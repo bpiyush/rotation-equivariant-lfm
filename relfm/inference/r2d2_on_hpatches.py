@@ -93,20 +93,21 @@ if __name__ == "__main__":
         sequences = [s for s in sequences if args.seq_prefix in s]
     rotations = np.arange(0, 360 + 1, args.gap_between_rotations, dtype=int)
     print_update(f"Generating predictions on {len(sequences)} sequences for {len(rotations)} rotations per image.")
+
     counter = 1
     for sequence in sequences:
         # set path to the source image
         img1_path = join(sequence, "1.ppm")
         img1 = Image.open(img1_path)
-        original_width, original_height = img1.size
+        # original_width, original_height = img1.size
         # img1 = img1.resize((args.imsize, args.imsize))
 
         # generate outputs for source image
         outputs = extract_keypoints_modified([img1], model, top_k=args.num_keypoints, verbose=False)[0]
+
+        # save outputs
         sequence_name = os.path.basename(sequence)
         os.makedirs(join(save_dir, sequence_name), exist_ok=True)
-        # save_path = join(save_dir, sequence_name, "1.pt")
-        # torch.save(outputs, save_path)
         save_path = join(save_dir, sequence_name, "1.npy")
         np.save(save_path, outputs)
 
@@ -125,6 +126,7 @@ if __name__ == "__main__":
         iterator = tqdm_iterator(range(len(rotation_grid)), desc=f"Generating predictions for {sequence_name}")
         for i in iterator:
             rotation, img2_index = rotation_grid[i], img2_indices_grid[i]
+
             img2 = img2s[img2_index - 2]
             img2_rotated = img2.rotate(rotation)
 
@@ -148,8 +150,8 @@ if __name__ == "__main__":
                     "H": H,
                 }
             )
-            # save_path = join(save_dir, sequence_name, f"{img2_index}_rotation_{rotation}.pt")
-            # torch.save(outputs, save_path)
+
+            # save outputs
             save_path = join(save_dir, sequence_name, f"{img2_index}_rotation_{rotation}.npy")
             np.save(save_path, outputs)
         
