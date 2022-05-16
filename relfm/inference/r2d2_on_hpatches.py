@@ -67,6 +67,10 @@ if __name__ == "__main__":
         help="Size of the images to be used for the evaluation.",
     )
     parser.add_argument(
+        "--downsize", action="store_true",
+        help="Whether to downsize the images before extracting keypoints.",
+    )
+    parser.add_argument(
         "--seq_prefix", "-s", type=str,
         default=None,
         help="Prefix of the sequence to be used for the evaluation.",
@@ -99,8 +103,10 @@ if __name__ == "__main__":
         # set path to the source image
         img1_path = join(sequence, "1.ppm")
         img1 = Image.open(img1_path)
-        # original_width, original_height = img1.size
-        # img1 = img1.resize((args.imsize, args.imsize))
+        original_width, original_height = img1.size
+
+        if args.downsize:
+            img1 = img1.resize((args.imsize, args.imsize))
 
         # generate outputs for source image
         outputs = extract_keypoints_modified([img1], model, top_k=args.num_keypoints, verbose=False)[0]
@@ -116,6 +122,8 @@ if __name__ == "__main__":
         # load all target images at once
         # img2s = [Image.open(join(sequence, f"{i}.ppm")).resize((args.imsize, args.imsize)) for i in img2_indices]
         img2s = [Image.open(join(sequence, f"{i}.ppm")) for i in img2_indices]
+        if args.downsize:
+            img2s = [img2.resize((args.imsize, args.imsize)) for img2 in img2s]
 
         # load all homographies
         Hs = [np.loadtxt(join(sequence, f"H_1_{i}")) for i in img2_indices]
@@ -132,16 +140,19 @@ if __name__ == "__main__":
 
             H = Hs[img2_index - 2].copy()
 
-            # # apply resing effect on H
-            # sx = args.imsize / original_width
-            # sy = args.imsize / original_height
+            if args.downsize:
 
-            # H_for_scaling = np.array([
-            #     [sx, 0., 0.],
-            #     [0., sy, 0.],
-            #     [0., 0., 1.],
-            # ])
-            # H = H_for_scaling @ Hs[img2_index - 2]
+                # apply resing effect on H
+                sx = args.imsize / original_width
+                sy = args.imsize / original_height
+
+                H_for_scaling = np.array([
+                    [sx, 0., 0.],
+                    [0., sy, 0.],
+                    [0., 0., 1.],
+                ])
+                H = H_for_scaling @ H @ np.linalg.inv(H_for_scaling)
+                # H = H @ H_for_scaling
 
             outputs = extract_keypoints_modified([img2_rotated], model, top_k=args.num_keypoints, verbose=False)[0]
             outputs.update(

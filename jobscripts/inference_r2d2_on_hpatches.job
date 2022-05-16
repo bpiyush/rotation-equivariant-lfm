@@ -26,4 +26,6 @@ python relfm/inference/r2d2_on_hpatches.py \
     --data_dir $data_dir \
     --model_ckpt_path $model_ckpt_path \
     --output_dir $output_dir \
-    --seq_prefix v_home
+    --seq_prefix v_home \
+    --downsize \
+    --imsize 300
