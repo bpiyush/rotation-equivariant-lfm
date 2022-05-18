@@ -16,9 +16,11 @@ module load Anaconda3/2021.05
 # Create an environment named "relfm-v1.0"
 echo "Creating an environment named 'relfm-v1.0'..."
 echo "----------------------------------------"
-conda create -y -n relfm-v1.0 python=3.9
-source activate relfm-v1.0
-conda install -y tqdm pillow numpy matplotlib scipy
-pip install ipdb ipython jupyter jupyterlab gdown termcolor natsort opencv-python
-pip install torch==1.8.1+cu101 torchvision==0.9.1+cu101 torchaudio==0.8.1 -f https://download.pytorch.org/whl/torch_stable.html
+cd $HOME/rotation-equivariant-lfm/
+conda env create -f relfm-v1.0.yml
+# conda create -y -n relfm-v1.0 python=3.9
+# source activate relfm-v1.0
+# conda install -y tqdm pillow numpy matplotlib scipy
+# pip install ipdb ipython jupyter jupyterlab gdown termcolor natsort opencv-python
+# pip install torch==1.8.1+cu101 torchvision==0.9.1+cu101 torchaudio==0.8.1 -f https://download.pytorch.org/whl/torch_stable.html
 echo "----------------------------------------"
