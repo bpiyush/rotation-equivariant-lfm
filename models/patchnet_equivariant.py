@@ -42,6 +42,7 @@ class Steerable_Quad_L2Net(Steerable_BaseNet):
 
         # TODO: Is this correct? We rewrote this to no longer be MNIST specific
         in_type = nn.FieldType(self.r2_act, 3 * [self.r2_act.trivial_repr])
+        # in_type = nn.FieldType(self.r2_act, [self.r2_act.trivial_repr])
         self.input_type = in_type
 
         #TODO: Need maskmodule, and MNIST specific?
