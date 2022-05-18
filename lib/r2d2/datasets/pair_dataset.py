@@ -42,7 +42,7 @@ class PairDataset (Dataset):
 
     def get_pair(self, idx, output=()):
         """ returns (img1, img2, `metadata`)
-        
+
         `metadata` is a dict() that can contain:
             flow: optical flow
             aflow: absolute flow
@@ -62,7 +62,7 @@ class PairDataset (Dataset):
 
     def __len__(self):
         return self.npairs # size should correspond to the number of pairs, not images
-    
+
     def __repr__(self):
         res =  'Dataset: %s\n' % self.__class__.__name__
         res += '  %d images,' % self.nimg
@@ -133,20 +133,20 @@ class SyntheticPairDataset (PairDataset):
         self.get_key = dataset.get_key
         self.get_filename = dataset.get_filename
         self.root = None
-        
+
     def make_pair(self, img):
         return img, img
 
     def get_pair(self, i, output=('aflow')):
         """ Procedure:
-        This function applies a series of random transformations to one original image 
+        This function applies a series of random transformations to one original image
         to form a synthetic image pairs with perfect ground-truth.
         """
-        if isinstance(output, str): 
+        if isinstance(output, str):
             output = output.split()
-            
+
         original_img = self.dataset.get_image(i)
-        
+
         scaled_image = self.scale(original_img)
         scaled_image, scaled_image2 = self.make_pair(scaled_image)
         scaled_and_distorted_image = self.distort(
@@ -161,12 +161,12 @@ class SyntheticPairDataset (PairDataset):
             aflow = np.float32(persp_apply(trf, xy).reshape(H,W,2))
             meta['flow'] = aflow - xy.reshape(H,W,2)
             meta['aflow'] = aflow
-        
+
         if 'homography' in output:
             meta['homography'] = np.float32(trf+(1,)).reshape(3,3)
 
         return scaled_image, scaled_and_distorted_image['img'], meta
-    
+
     def __repr__(self):
         res =  'Dataset: %s\n' % self.__class__.__name__
         res += '  %d images and pairs' % self.npairs
@@ -195,10 +195,10 @@ class TransformedPairs (PairDataset):
         self.get_key = dataset.get_key
         self.get_filename = dataset.get_filename
         self.root = None
-        
+
     def get_pair(self, i, output=''):
         """ Procedure:
-        This function applies a series of random transformations to one original image 
+        This function applies a series of random transformations to one original image
         to form a synthetic image pairs with perfect ground-truth.
         """
         img_a, img_b_, metadata = self.dataset.get_pair(i, output)
@@ -217,7 +217,7 @@ class TransformedPairs (PairDataset):
         if 'corres' in metadata:
             corres = metadata['corres']
             corres[:,1] = persp_apply(trf, corres[:,1])
-        
+
         if 'homography' in metadata:
             # p_b = homography * p_a
             trf_ = np.float32(trf+(1,)).reshape(3,3)

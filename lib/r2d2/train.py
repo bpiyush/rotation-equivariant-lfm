@@ -9,23 +9,24 @@ import torch.optim as optim
 from tools import common, trainer
 from tools.dataloader import *
 from nets.patchnet import *
+from nets.patchnet_equivariant import *
 from nets.losses import *
 
 default_net = "Quad_L2Net_ConfCFS()"
 
 toy_db_debug = """SyntheticPairDataset(
-    ImgFolder('imgs'), 
-            'RandomScale(256,1024,can_upscale=True)', 
+    ImgFolder('imgs'),
+            'RandomScale(256,1024,can_upscale=True)',
             'RandomTilting(0.5), PixelNoise(25)')"""
 
 db_web_images = """SyntheticPairDataset(
-    web_images, 
+    web_images,
         'RandomScale(256,1024,can_upscale=True)',
         'RandomTilting(0.5), PixelNoise(25)')"""
 
 db_aachen_images = """SyntheticPairDataset(
-    aachen_db_images, 
-        'RandomScale(256,1024,can_upscale=True)', 
+    aachen_db_images,
+        'RandomScale(256,1024,can_upscale=True)',
         'RandomTilting(0.5), PixelNoise(25)')"""
 
 db_aachen_style_transfer = """TransformedPairs(
@@ -74,14 +75,14 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser("Train R2D2")
 
     parser.add_argument("--data-loader", type=str, default=default_dataloader)
-    parser.add_argument("--train-data", type=str, default=list('WASF'), nargs='+', 
+    parser.add_argument("--train-data", type=str, default=list('WASF'), nargs='+',
         choices = set(data_sources.keys()))
     parser.add_argument("--net", type=str, default=default_net, help='network architecture')
 
     parser.add_argument("--pretrained", type=str, default="", help='pretrained model path')
     parser.add_argument("--save-path", type=str, required=True, help='model save_path path')
     parser.add_argument("--save-every", type=int, default=1, help='save model every n epochs')
-    
+
     parser.add_argument("--loss", type=str, default=default_loss, help="loss function")
     parser.add_argument("--sampler", type=str, default=default_sampler, help="AP sampler")
     parser.add_argument("--N", type=int, default=16, help="patch size for repeatability")
@@ -90,12 +91,12 @@ if __name__ == '__main__':
     parser.add_argument("--batch-size", "--bs", type=int, default=8, help="batch size")
     parser.add_argument("--learning-rate", "--lr", type=str, default=1e-4)
     parser.add_argument("--weight-decay", "--wd", type=float, default=5e-4)
-    
+
     parser.add_argument("--threads", type=int, default=8, help='number of worker threads')
     parser.add_argument("--gpu", type=int, nargs='+', default=[0], help='-1 for CPU')
-    
+
     args = parser.parse_args()
-    
+
     iscuda = common.torch_set_gpu(args.gpu)
     common.mkdir_for(args.save_path)
 
@@ -107,7 +108,7 @@ if __name__ == '__main__':
     loader = threaded_loader(db, iscuda, args.threads, args.batch_size, shuffle=True)
 
     # create network
-    print("\n>> Creating net = " + args.net) 
+    print("\n>> Creating net = " + args.net)
     net = eval(args.net)
     print(f" ( Model size: {common.model_size(net)/1000:.0f}K parameters )")
 
@@ -116,14 +117,14 @@ if __name__ == '__main__':
         checkpoint = torch.load(args.pretrained, lambda a,b:a)
         # net.load_pretrained(checkpoint['state_dict'])
         net.load_state_dict(checkpoint['state_dict'])
-        
+
     # create losses
     loss = args.loss.replace('`sampler`',args.sampler).replace('`N`',str(args.N))
     print("\n>> Creating loss = " + loss)
     loss = eval(loss.replace('\n',''))
-    
+
     # create optimizer
-    optimizer = optim.Adam( [p for p in net.parameters() if p.requires_grad], 
+    optimizer = optim.Adam( [p for p in net.parameters() if p.requires_grad],
                             lr=args.learning_rate, weight_decay=args.weight_decay)
 
     train = MyTrainer(net, loader, loss, optimizer)

@@ -12,7 +12,7 @@ def mkdir_for(file_path):
 
 
 def model_size(model):
-    ''' Computes the number of parameters of the model 
+    ''' Computes the number of parameters of the model
     '''
     size = 0
     for weights in model.state_dict().values():
