@@ -2,6 +2,7 @@ import torch
 from escnn import *
 import argparse
 import torch.nn.functional as F
+import torchvision
 
 class Steerable_BaseNet (torch.nn.Module):
     """ Takes a list of images as input, and returns for each image:
@@ -181,13 +182,16 @@ class Steerable_Quad_L2Net(Steerable_BaseNet):
 
         self.out_dim = output_invariant_type.size
 
-    def get_act_fn(self, c, freq=4, samples=16):
+    def get_act_fn(self, c, freq=2, samples=8):
         if self.fourier:
             return nn.FourierELU(self.r2_act, c, irreps=[(f,) for f in range(freq)], N=samples, inplace=True)
         else:
             return nn.ReLU(nn.FieldType(self.r2_act, c * [self.r2_act.regular_repr]), inplace=True)
 
     def forward_equi(self, x):
+        # rgb2gray = torchvision.transforms.Grayscale()
+        # x = rgb2gray(x)
+
         x = self.input_type(x)
         # x = self.mask(x)
 
