@@ -109,4 +109,4 @@ Tips:
     ```
 
 ### Evaluate predictions
-Use the generated predictions to evaluation robustness of feature matching to rotations. You can do this by running the following notebook.
+Use the generated predictions to evaluation robustness of feature matching to rotations. You can do this by running [this notebook](./notebooks/eval_on_hpatches.ipynb).
