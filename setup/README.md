@@ -12,6 +12,7 @@ conda activate relfm-v1.0
 conda install -y tqdm pillow numpy matplotlib scipy
 pip install ipdb ipython jupyter jupyterlab gdown opencv-python termcolor natsort
 pip install torch==1.9.0 torchvision==0.10.0 torchaudio==0.9.0
+pip install escnn
 ```
 
 > :warning: **Note**: This has been tested on Mac M1 machine.
