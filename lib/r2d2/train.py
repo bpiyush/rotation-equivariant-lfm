@@ -5,6 +5,7 @@
 import os, pdb
 import torch
 import torch.optim as optim
+import wandb
 
 from tools import common, trainer
 from tools.dataloader import *
@@ -94,16 +95,38 @@ if __name__ == '__main__':
 
     parser.add_argument("--threads", type=int, default=8, help='number of worker threads')
     parser.add_argument("--gpu", type=int, nargs='+', default=[0], help='-1 for CPU')
+    
+    parser.add_argument("--debug", action='store_true', help='debug mode')
+    parser.add_argument("--num_debug_batches", type=int, default=100, help='debug mode')
+    parser.add_argument("--wandb", action='store_true', help='wandb mode')
 
     args = parser.parse_args()
 
     iscuda = common.torch_set_gpu(args.gpu)
     common.mkdir_for(args.save_path)
+    
+    # configure wandb
+    if args.wandb:
+        # initialize wandb
+        model_name = (args.net.split('(')[0]).split('.')[-1]
+        wandb.init(project="RELFM", entity="bpiyush", name=model_name + f"-batches-{args.num_debug_batches}")
+        
+        # add arguments
+        wandb.config.update(vars(args))
 
     # Create data loader
     from datasets import *
     db = [data_sources[key] for key in args.train_data]
     db = eval(args.data_loader.replace('`data`',','.join(db)).replace('\n',''))
+    if args.debug:
+        
+        state = np.random.get_state()
+        np.random.seed(0)
+        subset_indices = np.random.choice(len(db), size=min(len(db), args.num_debug_batches * args.batch_size), replace=False)
+        np.random.set_state(state)
+        print("DEBUG: using subset of {} samples {}".format(len(subset_indices), subset_indices))
+        db = torch.utils.data.Subset(db, subset_indices)
+
     print("Training image database =", db)
     loader = threaded_loader(db, iscuda, args.threads, args.batch_size, shuffle=True)
 
@@ -111,6 +134,10 @@ if __name__ == '__main__':
     print("\n>> Creating net = " + args.net)
     net = eval(args.net)
     print(f" ( Model size: {common.model_size(net)/1000:.0f}K parameters )")
+    
+    if args.wandb:
+        # add model to wandb
+        wandb.watch([net])
 
     # initialization
     if args.pretrained:
@@ -134,7 +161,10 @@ if __name__ == '__main__':
     for epoch in range(args.epochs):
 
         print(f"\n>> Starting epoch {epoch}...")
-        train()
+        mean_loss = train()
+
+        if args.wandb:
+            wandb.log({"loss": mean_loss, "lr": optimizer.param_groups[0]['lr']})
 
         # save net after every n epochs
         if epoch % args.save_every == 0:
