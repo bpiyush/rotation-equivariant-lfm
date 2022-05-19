@@ -1,5 +1,4 @@
 """Inference module of R2D2-like models on HPatches dataset."""
-"""Evaluation script for the HPatches dataset."""
 
 import os
 from os.path import join, exists, expanduser
@@ -86,17 +85,23 @@ if __name__ == "__main__":
     # create base output directory
     os.makedirs(args.output_dir, exist_ok=True)
     # configure save directory
-    save_dir = configure_save_dir(args.output_dir, args.model_ckpt_path, dataset_name="hpatches")
+    save_dir = configure_save_dir(
+        args.output_dir, args.model_ckpt_path, dataset_name="hpatches",
+    )
 
     # load network
     print_update("Loading network.")
     model = load_network(args.model_ckpt_path)
 
+    # load sequence paths
     sequences = sorted(glob(join(args.data_dir, "*")))
     if args.seq_prefix is not None:
         sequences = [s for s in sequences if args.seq_prefix in s]
     rotations = np.arange(0, 360 + 1, args.gap_between_rotations, dtype=int)
-    print_update(f"Generating predictions on {len(sequences)} sequences for {len(rotations)} rotations per image.")
+    print_update(
+        f"Generating predictions on {len(sequences)}"\
+            "sequences for {len(rotations)} rotations per image.",
+    )
 
     counter = 1
     for sequence in sequences:
@@ -109,7 +114,9 @@ if __name__ == "__main__":
             img1 = img1.resize((args.imsize, args.imsize))
 
         # generate outputs for source image
-        outputs = extract_keypoints_modified([img1], model, top_k=args.num_keypoints, verbose=False)[0]
+        outputs = extract_keypoints_modified(
+            [img1], model, top_k=args.num_keypoints, verbose=False,
+        )[0]
 
         # save outputs
         sequence_name = os.path.basename(sequence)
@@ -120,7 +127,6 @@ if __name__ == "__main__":
         # possible indices of the target images
         img2_indices = np.arange(2, 7)
         # load all target images at once
-        # img2s = [Image.open(join(sequence, f"{i}.ppm")).resize((args.imsize, args.imsize)) for i in img2_indices]
         img2s = [Image.open(join(sequence, f"{i}.ppm")) for i in img2_indices]
         if args.downsize:
             img2s = [img2.resize((args.imsize, args.imsize)) for img2 in img2s]
@@ -131,7 +137,9 @@ if __name__ == "__main__":
         rotation_grid, img2_indices_grid  = np.meshgrid(rotations, img2_indices)
         rotation_grid, img2_indices_grid = rotation_grid.flatten(), img2_indices_grid.flatten()
 
-        iterator = tqdm_iterator(range(len(rotation_grid)), desc=f"Generating predictions for {sequence_name}")
+        iterator = tqdm_iterator(
+            range(len(rotation_grid)), desc=f"Generating predictions for {sequence_name}",
+        )
         for i in iterator:
             rotation, img2_index = rotation_grid[i], img2_indices_grid[i]
 
@@ -152,9 +160,11 @@ if __name__ == "__main__":
                     [0., 0., 1.],
                 ])
                 H = H_for_scaling @ H @ np.linalg.inv(H_for_scaling)
-                # H = H @ H_for_scaling
 
-            outputs = extract_keypoints_modified([img2_rotated], model, top_k=args.num_keypoints, verbose=False)[0]
+            # generate outputs for target image, rotated by `rotation` degrees
+            outputs = extract_keypoints_modified(
+                [img2_rotated], model, top_k=args.num_keypoints, verbose=False,
+            )[0]
             outputs.update(
                 {
                     "rotation": rotation,
@@ -163,7 +173,9 @@ if __name__ == "__main__":
             )
 
             # save outputs
-            save_path = join(save_dir, sequence_name, f"{img2_index}_rotation_{rotation}.npy")
+            save_path = join(
+                save_dir, sequence_name, f"{img2_index}_rotation_{rotation}.npy",
+            )
             np.save(save_path, outputs)
         
         print(f"Finished processing sequence {sequence_name} ({counter}/{len(sequences)}).")
