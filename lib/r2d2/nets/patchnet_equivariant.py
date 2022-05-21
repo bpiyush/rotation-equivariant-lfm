@@ -283,7 +283,9 @@ class Steerable_Quad_L2Net(Steerable_BaseNet):
 
         # Convert from Geometric Tensor to Tensor
         x = x.tensor
-        x = torch.squeeze(x)
+
+        # TODO: removed this squeeze because it breaks during inference.
+        # x = torch.squeeze(x)
 
         return x
 
