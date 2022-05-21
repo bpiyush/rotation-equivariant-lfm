@@ -11,10 +11,11 @@ import torch
 from tools import common
 from tools.dataloader import norm_RGB
 from nets.patchnet import *
+from nets.patchnet_equivariant import *
 
 
 def load_network(model_fn): 
-    checkpoint = torch.load(model_fn)
+    checkpoint = torch.load(model_fn, map_location="cpu")
     print("\n>> Creating net = " + checkpoint['net']) 
     net = eval(checkpoint['net'])
     nb_of_weights = common.model_size(net)
@@ -28,7 +29,7 @@ def load_network(model_fn):
 
 class NonMaxSuppression (torch.nn.Module):
     def __init__(self, rel_thr=0.7, rep_thr=0.7):
-        nn.Module.__init__(self)
+        torch.nn.Module.__init__(self)
         self.max_filter = torch.nn.MaxPool2d(kernel_size=3, stride=1, padding=1)
         self.rel_thr = rel_thr
         self.rep_thr = rep_thr
