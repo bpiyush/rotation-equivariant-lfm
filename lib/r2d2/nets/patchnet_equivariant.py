@@ -235,7 +235,7 @@ class Steerable_Quad_L2Net(Steerable_BaseNet):
             nn.R2Conv(in_type, out_type, kernel_size=3, padding=4, dilation=4),
         )
 
-        print(self)
+        # print(self)
 
         # 128, k=7, stride=8, not bn or act_fn
         # in_type = self.block6.out_type
@@ -332,7 +332,11 @@ class Discrete_Quad_L2Net_ConfCFS (Steerable_Quad_L2Net):
         # assert self.ops, "You need to add convolutions first"
         # for op in self.ops:
         #     x = op(x)
+        # import ipdb; ipdb.set_trace()
         x = self.forward_equi(x)
+        # shape of x: [128, H, W]
+        # expect: {B, 128, H, W}
+        # x = x.unsqueeze(0)
 
         # compute the confidence maps
         ureliability = self.clf(x**2)

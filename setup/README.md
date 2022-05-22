@@ -13,6 +13,7 @@ conda install -y tqdm pillow numpy matplotlib scipy
 pip install ipdb ipython jupyter jupyterlab gdown opencv-python termcolor natsort
 pip install torch==1.9.0 torchvision==0.10.0 torchaudio==0.9.0
 pip install escnn
+pip install wandb
 ```
 
 > :warning: **Note**: This has been tested on Mac M1 machine.
@@ -69,4 +70,16 @@ module purge
 module load 2021
 module load Anaconda3/2021.05
 conda activate relfm-v1.0
+```
+
+
+## Setting up W&B
+
+```bash
+# make sure you have the environment activated
+# make sure you have installed wandb
+pip install wandb
+
+wandb login
+# after this, enter the API key from settings of your account on W&B
 ```

@@ -141,3 +141,23 @@ def show_images_with_keypoints(images: list, kps: list, radius=15, color=(0, 220
     
     # show
     show_grid_of_images(images_with_kps, n_cols=len(images), figsize=figsize)
+
+
+def set_latex_fonts(usetex=True, fontsize=14, show_sample=False, **kwargs):
+    try:
+        plt.rcParams.update({
+            "text.usetex": usetex,
+            "font.family": "serif",
+            "font.serif": ["Computer Modern Roman"],
+            "font.size": fontsize,
+            **kwargs,
+        })
+        if show_sample:
+            plt.figure()
+            plt.title("Sample $y = x^2$")
+            plt.plot(np.arange(0, 10), np.arange(0, 10)**2, "--o")
+            plt.grid()
+            plt.show()
+    except:
+        print("Failed to setup LaTeX fonts. Proceeding without.")
+        pass

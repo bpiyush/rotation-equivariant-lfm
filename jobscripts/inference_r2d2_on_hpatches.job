@@ -20,7 +20,8 @@ source activate relfm-v1.0
 # Run your code
 # WARNING: This needs to be run from the root of the repo
 data_dir=$PWD/data/hpatches-sequences-release/
-model_ckpt_path=$PWD/checkpoints/r2d2_WASF_N16.pt
+# model_ckpt_path=$PWD/checkpoints/r2d2_WASF_N16.pt
+model_ckpt_path=$PWD/trained_models/epoch_16_test_model.pt
 output_dir=$HOME/outputs/rotation-equivariant-lfm
 python relfm/inference/r2d2_on_hpatches.py \
     --data_dir $data_dir \

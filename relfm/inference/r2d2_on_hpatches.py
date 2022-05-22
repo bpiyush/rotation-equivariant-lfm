@@ -91,7 +91,12 @@ if __name__ == "__main__":
 
     # load network
     print_update("Loading network.")
-    model = load_network(args.model_ckpt_path)
+    from lib.r2d2.nets.patchnet_equivariant import Discrete_Quad_L2Net_ConfCFS
+    checkpoint = torch.load(args.model_ckpt_path, map_location="cpu")
+    model = eval(checkpoint['net'])
+    model.load_state_dict(checkpoint['state_dict'], strict=False)
+    
+    # model = load_network(args.model_ckpt_path)
 
     # load sequence paths
     sequences = sorted(glob(join(args.data_dir, "*")))
@@ -99,8 +104,8 @@ if __name__ == "__main__":
         sequences = [s for s in sequences if args.seq_prefix in s]
     rotations = np.arange(0, 360 + 1, args.gap_between_rotations, dtype=int)
     print_update(
-        f"Generating predictions on {len(sequences)}"\
-            "sequences for {len(rotations)} rotations per image.",
+        f"Generating predictions on {len(sequences)} "\
+            f"sequences for {len(rotations)} rotations per image.",
     )
 
     counter = 1

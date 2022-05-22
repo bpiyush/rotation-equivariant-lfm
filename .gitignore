@@ -11,6 +11,9 @@ slurm_output_*.out
 # Do not ignore R2D2 folder
 !lib/r2d2/
 
+# W&B
+wandb/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
