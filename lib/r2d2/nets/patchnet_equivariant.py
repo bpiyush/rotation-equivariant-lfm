@@ -283,8 +283,9 @@ class Steerable_Quad_L2Net(Steerable_BaseNet):
 
         # Convert from Geometric Tensor to Tensor
         x = x.tensor
-        # import ipdb; ipdb.set_trace()
-        x = torch.squeeze(x)
+
+        # TODO: removed this squeeze because it breaks during inference.
+        # x = torch.squeeze(x)
 
         return x
 
@@ -335,7 +336,7 @@ class Discrete_Quad_L2Net_ConfCFS (Steerable_Quad_L2Net):
         x = self.forward_equi(x)
         # shape of x: [128, H, W]
         # expect: {B, 128, H, W}
-        x = x.unsqueeze(0)
+        # x = x.unsqueeze(0)
 
         # compute the confidence maps
         ureliability = self.clf(x**2)
