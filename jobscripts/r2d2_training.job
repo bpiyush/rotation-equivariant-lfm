@@ -1,13 +1,13 @@
 #!/bin/bash
 
 #SBATCH --partition=gpu_titanrtx_shared_course
-#SBATCH --gres=gpu:2
-#SBATCH --job-name=R2D2_C4
+#SBATCH --gres=gpu:1
+#SBATCH --job-name=R2D2_SO2
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=2
-#SBATCH --time=24:00:00
+#SBATCH --time=48:00:00
 #SBATCH --mem=32000M
-#SBATCH --output=slurm_output_C4_%A.out
+#SBATCH --output=slurm_output_SO2_%A.out
 
 module purge
 module load 2021
@@ -25,5 +25,5 @@ mkdir -p $save_dir
 # python ./lib/r2d2/train.py --save-path $save_dir/pretrained_from_23_model.pt --pretrained $save_dir/epoch_23_model.pt --epochs 2
 # python ./lib/r2d2/train.py --net "Steerable_Quad_L2Net_ConfCFS()" --save-path $save_dir/equivariant_models/test_model.pt
 
-python ./lib/r2d2/train.py --net "Discrete_Quad_L2Net_ConfCFS()" --save-path $save_dir/equivariant_models/C4_4x16_1x32_1x64_2x128.pt
-# python ./lib/r2d2/train.py --gpu 0 1 --net "Steerable_Quad_L2Net_ConfCFS()" --save-path $save_dir/equivariant_models/SO2_4x16_1x32_1x64_2x128.pt
+# python ./lib/r2d2/train.py --net "Discrete_Quad_L2Net_ConfCFS()" --save-path $save_dir/equivariant_models/C4_4x16_1x32_1x64_2x128.pt
+python ./lib/r2d2/train.py --net "Steerable_Quad_L2Net_ConfCFS()" --save-path $save_dir/equivariant_models/SO2_4x16_1x32_1x64_2x128.pt
