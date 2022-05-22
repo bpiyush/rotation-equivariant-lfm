@@ -91,7 +91,10 @@ if __name__ == "__main__":
 
     # load network
     print_update("Loading network.")
-    from lib.r2d2.nets.patchnet_equivariant import Discrete_Quad_L2Net_ConfCFS
+    from lib.r2d2.nets.patchnet_equivariant import (
+        Discrete_Quad_L2Net_ConfCFS,
+        Steerable_Quad_L2Net_ConfCFS,
+    )
     checkpoint = torch.load(args.model_ckpt_path, map_location="cpu")
     model = eval(checkpoint['net'])
     model.load_state_dict(checkpoint['state_dict'], strict=False)
