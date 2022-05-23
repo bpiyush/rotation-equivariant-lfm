@@ -316,7 +316,8 @@ class Steerable_Quad_L2Net_ConfCFS (Steerable_Quad_L2Net):
 
 
 class Discrete_Quad_L2Net_ConfCFS (Steerable_Quad_L2Net):
-    def __init__(self, r2_act=None, fourier=False, num_rotations=4):
+    def __init__(self, r2_act=None, fourier=False, num_rotations=8):
+        print(f"Running for C{num_rotations}!")
         #TODO: This is hardcoded for now, but works for now.
         if not r2_act:
             r2_act = gspaces.rot2dOnR2(N=num_rotations)
