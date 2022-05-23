@@ -5,7 +5,12 @@
 import os, pdb
 import torch
 import torch.optim as optim
-import wandb
+
+try:
+    import wandb
+except:
+    print("W&B not installed. Skipping it. Make sure to not pass --wandb to the command line.")
+    pass
 
 from tools import common, trainer
 from tools.dataloader import *
