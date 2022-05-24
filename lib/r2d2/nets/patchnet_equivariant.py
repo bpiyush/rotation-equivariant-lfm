@@ -79,7 +79,7 @@ class Steerable_Quad_L2Net(Steerable_BaseNet):
         activation1 = self.get_act_fn(16)
         out_type = activation1.in_type
         self.block1 = nn.SequentialModule(
-            nn.R2Conv(in_type, out_type, kernel_size=3, padding=1),
+            nn.R2Conv(in_type, out_type, kernel_size=3, padding=1, bias=False),
             nn.IIDBatchNorm2d(out_type, eps=eps, affine=affine),
             activation1,
         )
@@ -88,9 +88,13 @@ class Steerable_Quad_L2Net(Steerable_BaseNet):
         activation2 = self.get_act_fn(16)
         out_type = activation2.in_type
         self.block2 = nn.SequentialModule(
-            nn.R2Conv(in_type, out_type, kernel_size=3, padding=1),
+            nn.R2Conv(in_type, out_type, kernel_size=3, padding=1, bias=False),
             nn.IIDBatchNorm2d(out_type, eps=eps, affine=affine),
             activation2,
+        )
+
+        self.pool1 = nn.SequentialModule(
+            nn.PointwiseAvgPoolAntialiased(out_type, sigma=0.66, stride=2)
         )
 
         # SWAP
@@ -108,7 +112,7 @@ class Steerable_Quad_L2Net(Steerable_BaseNet):
         activation_extra = self.get_act_fn(16)
         out_type = activation_extra.in_type
         self.block_extra = nn.SequentialModule(
-            nn.R2Conv(in_type, out_type, kernel_size=3, padding=1, dilation=1),
+            nn.R2Conv(in_type, out_type, kernel_size=3, padding=1, dilation=1, bias=False),
             nn.IIDBatchNorm2d(out_type, eps=eps, affine=affine),
             activation_extra,
         )
@@ -127,9 +131,13 @@ class Steerable_Quad_L2Net(Steerable_BaseNet):
         activation3 = self.get_act_fn(16)
         out_type = activation3.in_type
         self.block3 = nn.SequentialModule(
-            nn.R2Conv(in_type, out_type, kernel_size=3, padding=2, dilation=2),
+            nn.R2Conv(in_type, out_type, kernel_size=3, padding=2, dilation=2, bias=False),
             nn.IIDBatchNorm2d(out_type, eps=eps, affine=affine),
             activation3,
+        )
+
+        self.pool2 = nn.SequentialModule(
+            nn.PointwiseAvgPoolAntialiased(out_type, sigma=0.66, stride=2)
         )
 
 
@@ -159,7 +167,7 @@ class Steerable_Quad_L2Net(Steerable_BaseNet):
         activation5 = self.get_act_fn(32)
         out_type = activation5.in_type
         self.block5 = nn.SequentialModule(
-            nn.R2Conv(in_type, out_type, kernel_size=3, padding=2, dilation=2),
+            nn.R2Conv(in_type, out_type, kernel_size=3, padding=2, dilation=2, bias=False),
             nn.IIDBatchNorm2d(out_type, eps=eps, affine=affine),
             activation5,
         )
@@ -191,9 +199,13 @@ class Steerable_Quad_L2Net(Steerable_BaseNet):
         activation6 = self.get_act_fn(64)
         out_type = activation6.in_type
         self.block6 = nn.SequentialModule(
-            nn.R2Conv(in_type, out_type, kernel_size=3, padding=4, dilation=4),
+            nn.R2Conv(in_type, out_type, kernel_size=3, padding=4, dilation=4, bias=False),
             nn.IIDBatchNorm2d(out_type, eps=eps, affine=affine),
             activation6,
+        )
+
+        self.pool3 = nn.SequentialModule(
+            nn.PointwiseAvgPoolAntialiased(out_type, sigma=0.66, stride=2)
         )
 
 
@@ -225,14 +237,14 @@ class Steerable_Quad_L2Net(Steerable_BaseNet):
         activation6 = self.get_act_fn(128)
         out_type = activation6.in_type
         self.block7 = nn.SequentialModule(
-            nn.R2Conv(in_type, out_type, kernel_size=3, padding=2, dilation=2),
+            nn.R2Conv(in_type, out_type, kernel_size=3, padding=2, dilation=2, bias=False),
             nn.IIDBatchNorm2d(out_type, eps=eps, affine=affine),
         )
         in_type = self.block7.out_type
         activation8 = self.get_act_fn(128)
         out_type = activation8.in_type
         self.block8 = nn.SequentialModule(
-            nn.R2Conv(in_type, out_type, kernel_size=3, padding=4, dilation=4),
+            nn.R2Conv(in_type, out_type, kernel_size=3, padding=4, dilation=4, bias=False),
         )
 
         # print(self)
@@ -265,13 +277,16 @@ class Steerable_Quad_L2Net(Steerable_BaseNet):
         # Convolutions
         x = self.block1(x)
         x = self.block2(x)
+        x = self.pool1(x)
 
         x = self.block_extra(x)
         x = self.block3(x)
+        x = self.pool2(x)
 
         # x = self.block4(x)
         x = self.block5(x)
         x = self.block6(x)
+        x = self.pool3(x)
 
         x = self.block7(x)
         x = self.block8(x)
@@ -317,12 +332,19 @@ class Steerable_Quad_L2Net_ConfCFS (Steerable_Quad_L2Net):
 
 class Discrete_Quad_L2Net_ConfCFS (Steerable_Quad_L2Net):
     def __init__(self, r2_act=None, fourier=False, num_rotations=8):
-        print(f"Running for C{num_rotations}!")
-        #TODO: This is hardcoded for now, but works for now.
-        if not r2_act:
-            r2_act = gspaces.rot2dOnR2(N=num_rotations)
+        # print(f"Running for C{num_rotations}!")
+        # #TODO: This is hardcoded for now, but works for now.
+        # if not r2_act:
+        #     r2_act = gspaces.rot2dOnR2(N=num_rotations)
+        #
+        r2_act = gspaces.rot2dOnR2(N=8)
 
         Steerable_Quad_L2Net.__init__(self, r2_act, fourier)
+
+        # TODO: Remove
+        print(self)
+        print(r2_act)
+        exit()
         # reliability classifier
         self.clf = torch.nn.Conv2d(self.out_dim, 2, kernel_size=1)
         # repeatability classifier: for some reasons it's a softplus, not a softmax!
@@ -357,7 +379,8 @@ def main(args):
     else:
         raise ValueError(f'Do not recognize group {args.group}')
 
-    model = Steerable_Quad_L2Net_ConfCFS(r2_act, fourier=fourier).to(args.device)
+    # TODO: Steerable
+    model = Discrete_Quad_L2Net_ConfCFS(r2_act, fourier=fourier).to(args.device)
     print(model)
 
 if __name__ == '__main__':
