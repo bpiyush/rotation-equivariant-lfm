@@ -162,7 +162,7 @@ def evaluate_matching_with_rotation(
     return result
 
 
-def analyze_result(img1: Image.Image, img2: Image.Image, result, match_thickness: int = 1, K=100, radius=1):
+def analyze_result(img1: Image.Image, img2: Image.Image, result, match_thickness: int = 1, K=100, radius=1, model_name=""):
     """Visualizes matching result for given pair of images."""
 
     K = min(K, result["matches"].shape[0])
@@ -206,7 +206,7 @@ def analyze_result(img1: Image.Image, img2: Image.Image, result, match_thickness
     
     # show the final image
     accuracy = result['matching_accuracy']
-    title = f"Matching accuracy: {accuracy:.2f} with rotation {rotation}"
+    title = f"Matching accuracy: {accuracy:.2f} with rotation {rotation} for {model_name}"
     show_single_image(
         img, title=title, figsize=(10, 8),
     )

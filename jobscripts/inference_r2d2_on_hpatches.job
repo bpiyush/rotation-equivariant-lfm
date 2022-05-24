@@ -24,7 +24,8 @@ data_dir=$PWD/data/hpatches-sequences-release/
 # model_ckpt_path=$PWD/trained_models/epoch_16_test_model.pt
 # model_ckpt_path=$PWD/trained_models/epoch_3_SO2_4x16_1x32_1x64_2x128.pt
 # model_ckpt_path=$PWD/trained_models/epoch_3_C8_4x16_1x32_1x64_2x128.pt
-model_ckpt_path=$PWD/trained_models/epoch_17_SO2_4x16_1x32_1x64_2x128.pt
+# model_ckpt_path=$PWD/trained_models/epoch_17_SO2_4x16_1x32_1x64_2x128.pt
+model_ckpt_path=$PWD/trained_models/epoch_0_SO2_downsamp_4x16_2x32_1x64_1x128.pt
 output_dir=$HOME/outputs/rotation-equivariant-lfm
 python relfm/inference/r2d2_on_hpatches.py \
     --data_dir $data_dir \

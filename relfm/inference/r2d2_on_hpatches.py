@@ -97,9 +97,9 @@ if __name__ == "__main__":
     )
     checkpoint = torch.load(args.model_ckpt_path, map_location="cpu")
     model = eval(checkpoint['net'])
-    model.train()
-    model.load_state_dict(checkpoint['state_dict'], strict=True)
-    model.eval()
+    # model.train()
+    model.load_state_dict(checkpoint['state_dict'], strict=False)
+    # model.eval()
     
     # model = load_network(args.model_ckpt_path)
 
