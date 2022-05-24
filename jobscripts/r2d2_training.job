@@ -28,5 +28,5 @@ mkdir -p $save_dir
 # python ./lib/r2d2/train.py --net "Discrete_Quad_L2Net_ConfCFS()" --save-path $save_dir/equivariant_models/C4_4x16_1x32_1x64_2x128.pt
 # python ./lib/r2d2/train.py --net "Discrete_Quad_L2Net_ConfCFS()" --save-path $save_dir/equivariant_models/C8_4x16_1x32_1x64_2x128.pt
 # python ./lib/r2d2/train.py --net "Steerable_Quad_L2Net_ConfCFS()" --save-path $save_dir/equivariant_models/SO2_4x16_1x32_1x64_2x128.pt
-python ./lib/r2d2/train.py --net "Steerable_Quad_L2Net_ConfCFS()" --save-path $save_dir/equivariant_models/SO2_downsamp_4x16_1x32_1x64_2x128.pt
+python ./lib/r2d2/train.py --net "Steerable_Quad_L2Net_ConfCFS()" --save-path $save_dir/equivariant_models/SO2_downsamp_4x16_2x32_1x64_1x128.pt --wandb --debug
 
