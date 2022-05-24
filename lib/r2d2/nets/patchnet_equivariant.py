@@ -188,7 +188,7 @@ class Steerable_Quad_L2Net(Steerable_BaseNet):
         #     activation6,
         # )
         in_type = self.block5.out_type
-        activation6 = self.get_act_fn(64)
+        activation6 = self.get_act_fn(32)
         out_type = activation6.in_type
         self.block6 = nn.SequentialModule(
             nn.R2Conv(in_type, out_type, kernel_size=3, padding=4, dilation=4),
@@ -222,7 +222,7 @@ class Steerable_Quad_L2Net(Steerable_BaseNet):
 
         # Our own attempt, using 3x3 filters instead of consecutive 2x2's
         in_type = self.block6.out_type
-        activation6 = self.get_act_fn(128)
+        activation6 = self.get_act_fn(64)
         out_type = activation6.in_type
         self.block7 = nn.SequentialModule(
             nn.R2Conv(in_type, out_type, kernel_size=3, padding=2, dilation=2),
@@ -235,8 +235,6 @@ class Steerable_Quad_L2Net(Steerable_BaseNet):
             nn.R2Conv(in_type, out_type, kernel_size=3, padding=4, dilation=4),
         )
 
-        # print(self)
-
         # 128, k=7, stride=8, not bn or act_fn
         # in_type = self.block6.out_type
         # out_type = activation6.in_type
@@ -248,6 +246,7 @@ class Steerable_Quad_L2Net(Steerable_BaseNet):
         self.invariant_map = nn.R2Conv(out_type, output_invariant_type, kernel_size=1, bias=False)
 
         self.out_dim = output_invariant_type.size
+        print(self)
 
     def get_act_fn(self, c, freq=4, samples=16):
         if self.fourier:
