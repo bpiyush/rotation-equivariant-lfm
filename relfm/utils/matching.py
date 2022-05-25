@@ -102,6 +102,7 @@ def evaluate_matching_with_rotation(
         rotation: int = 0,
         return_metadata: bool = False,
         threshold: float = 5.,
+        ransac=False,
     ):
     """
     Evaluate the matching between two sets of keypoints
@@ -120,6 +121,7 @@ def evaluate_matching_with_rotation(
         rotation (int): Rotation angle in degrees, default = 0.
         return_metadata (bool): If True, return the metadata of the matching.
         threshold (float): threshold (pixels) to decide an acceptable match, default = 1.
+        ransac (bool): If True, use RANSAC to find the best set of matches via cv2.findHomography.
     
     Returns:
         (dict): Dictionary with the all relevant data/metrics.
@@ -130,6 +132,10 @@ def evaluate_matching_with_rotation(
     # keep only the matches subset of keypoints
     kp1 = kp1[matches[:, 0], :2]
     kp2 = kp2[matches[:, 1], :2]
+    
+    if ransac:
+        M, mask = cv2.findHomography(kp1, kp2, cv2.RANSAC,5.0)
+        matches = matches[np.where(mask.flatten())]
 
     # add rotation to H
     H_combined = append_rotation_to_homography(H, rotation, width, height)
