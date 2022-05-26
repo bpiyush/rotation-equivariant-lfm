@@ -1,4 +1,5 @@
 """Matching helper functions."""
+from os.path import join
 import cv2
 import numpy as np
 import torch
@@ -103,6 +104,8 @@ def evaluate_matching_with_rotation(
         return_metadata: bool = False,
         threshold: float = 5.,
         ransac=False,
+        ransac_threshold=3.,
+        verbose=False,
     ):
     """
     Evaluate the matching between two sets of keypoints
@@ -129,13 +132,27 @@ def evaluate_matching_with_rotation(
     # find matches between keypoints
     matches = mnn_matcher_from_D2Net(torch.from_numpy(des1), torch.from_numpy(des2))
 
+    # # keep only the matches subset of keypoints
+    # kp1 = kp1[matches[:, 0], :2]
+    # kp2 = kp2[matches[:, 1], :2]
+    
+    if ransac:
+        M, mask = cv2.findHomography(
+            kp1[matches[:, 0], :2],
+            kp2[matches[:, 1], :2],
+            cv2.RANSAC,
+            ransac_threshold,
+        )
+        num_old_matches = matches.shape[0]
+        matches = matches[np.where(mask.flatten())]
+        num_new_matches = matches.shape[0]
+        
+        if verbose:
+            print("RANSAC: {} matches removed".format(num_old_matches - num_new_matches))
+        
     # keep only the matches subset of keypoints
     kp1 = kp1[matches[:, 0], :2]
     kp2 = kp2[matches[:, 1], :2]
-    
-    if ransac:
-        M, mask = cv2.findHomography(kp1, kp2, cv2.RANSAC,5.0)
-        matches = matches[np.where(mask.flatten())]
 
     # add rotation to H
     H_combined = append_rotation_to_homography(H, rotation, width, height)
@@ -168,7 +185,7 @@ def evaluate_matching_with_rotation(
     return result
 
 
-def analyze_result(img1: Image.Image, img2: Image.Image, result, match_thickness: int = 1, K=100, radius=1, model_name=""):
+def analyze_result(img1: Image.Image, img2: Image.Image, result, match_thickness: int = 1, K=100, radius=1, model_name="", save=False, save_dir="./",):
     """Visualizes matching result for given pair of images."""
 
     K = min(K, result["matches"].shape[0])
@@ -213,6 +230,7 @@ def analyze_result(img1: Image.Image, img2: Image.Image, result, match_thickness
     # show the final image
     accuracy = result['matching_accuracy']
     title = f"Matching accuracy: {accuracy:.2f} with rotation {rotation} for {model_name}"
+    save_path = join(save_dir, f"{model_name}_rotation_{rotation}.pdf")
     show_single_image(
-        img, title=title, figsize=(10, 8),
+        img, title=title, figsize=(13, 9), save=save, save_path=save_path,
     )

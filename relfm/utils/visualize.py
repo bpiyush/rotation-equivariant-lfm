@@ -17,26 +17,29 @@ COLORS = {
 }
 
 
-def show_single_image(image: np.ndarray, figsize: tuple = (8, 8), title: str = None, cmap: str = None, ticks=False):
+def show_single_image(image: np.ndarray, figsize: tuple = (8, 8), title: str = None, titlesize=18, cmap: str = None, ticks=False, save=False, save_path=None):
     """Show a single image."""
     fig, ax = plt.subplots(1, 1, figsize=figsize)
 
     if isinstance(image, Image.Image):
         image = np.asarray(image)
 
-    ax.set_title(title)
+    ax.set_title(title, fontsize=titlesize)
     ax.imshow(image, cmap=cmap)
     
     if not ticks:
         ax.set_xticks([])
         ax.set_yticks([])
 
+    if save:
+        plt.savefig(save_path, bbox_inches='tight')
+    
     plt.show()
 
 
 def show_grid_of_images(
         images: np.ndarray, n_cols: int = 4, figsize: tuple = (8, 8),
-        cmap=None, subtitles=None, title=None,
+        cmap=None, subtitles=None, title=None, subtitlesize=18,
     ):
     """Show a grid of images."""
     n_cols = min(n_cols, len(images))
@@ -51,13 +54,13 @@ def show_grid_of_images(
         subtitles = [None] * len(images)
 
     n_rows = int(np.ceil(len(images) / n_cols))
-    fig, axes = plt.subplots(n_rows, n_cols, figsize=figsize)
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=figsize, layout="tight")
     for i, ax in enumerate(axes.flat):
         if i < len(images):
             if len(images[i].shape) == 2:
                 cmap="gray"
             ax.imshow(images[i], cmap=cmap)
-            ax.set_title(subtitles[i])
+            ax.set_title(subtitles[i], fontsize=subtitlesize)
             ax.axis('off')
     plt.suptitle(title, y=0.8)
     plt.show()
@@ -130,7 +133,7 @@ def get_concat_v(im1, im2):
     return dst
 
 
-def show_images_with_keypoints(images: list, kps: list, radius=15, color=(0, 220, 220), figsize=(10, 8)):
+def show_images_with_keypoints(images: list, kps: list, radius=15, color=(0, 220, 220), figsize=(10, 8), return_images=False):
     assert len(images) == len(kps)
 
     # generate
@@ -141,6 +144,9 @@ def show_images_with_keypoints(images: list, kps: list, radius=15, color=(0, 220
     
     # show
     show_grid_of_images(images_with_kps, n_cols=len(images), figsize=figsize)
+    
+    if return_images:
+        return images_with_kps
 
 
 def set_latex_fonts(usetex=True, fontsize=14, show_sample=False, **kwargs):
@@ -161,3 +167,9 @@ def set_latex_fonts(usetex=True, fontsize=14, show_sample=False, **kwargs):
     except:
         print("Failed to setup LaTeX fonts. Proceeding without.")
         pass
+
+
+def get_colors(num_colors, palette="jet"):
+    cmap = plt.get_cmap(palette)
+    colors = [cmap(i) for i in np.linspace(0, 1, num_colors)]
+    return colors
