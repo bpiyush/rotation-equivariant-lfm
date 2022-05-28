@@ -114,8 +114,14 @@ if __name__ == '__main__':
     if args.wandb:
         # initialize wandb
         model_name = (args.net.split('(')[0]).split('.')[-1]
+<<<<<<< HEAD
         wandb.init(project="RELFM", entity="bpiyush", name=model_name + f"-batches-{args.num_debug_batches}")
 
+=======
+        suffix = "" if not args.debug else  f"-batches-{args.num_debug_batches}"
+        wandb.init(project="RELFM", entity="bpiyush", name=model_name + suffix)
+        
+>>>>>>> df0125de724e2d97ada14350a87c815e069ef857
         # add arguments
         wandb.config.update(vars(args))
 
@@ -175,12 +181,14 @@ if __name__ == '__main__':
         # save net after every n epochs
         if epoch % args.save_every == 0:
             print(f"\n>> Saving model at epoch {epoch}...")
+            # save in eval mode
             # modify save path to add epoch number
             filename = os.path.basename(args.save_path)
             save_path = args.save_path.replace(filename, f'epoch_{epoch}_{filename}')
-            torch.save({'net': args.net, 'state_dict': net.state_dict()}, save_path)
+            torch.save({'net': args.net, 'state_dict': net.eval().state_dict()}, save_path)
 
     print(f"\n>> Saving model to {args.save_path}")
-    torch.save({'net': args.net, 'state_dict': net.state_dict()}, args.save_path)
+    # save in eval mode
+    torch.save({'net': args.net, 'state_dict': net.eval().state_dict()}, args.save_path)
 
 
