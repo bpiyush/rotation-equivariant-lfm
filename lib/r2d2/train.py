@@ -100,7 +100,7 @@ if __name__ == '__main__':
 
     parser.add_argument("--threads", type=int, default=8, help='number of worker threads')
     parser.add_argument("--gpu", type=int, nargs='+', default=[0], help='-1 for CPU')
-    
+
     parser.add_argument("--debug", action='store_true', help='debug mode')
     parser.add_argument("--num_debug_batches", type=int, default=100, help='debug mode')
     parser.add_argument("--wandb", action='store_true', help='wandb mode')
@@ -109,13 +109,13 @@ if __name__ == '__main__':
 
     iscuda = common.torch_set_gpu(args.gpu)
     common.mkdir_for(args.save_path)
-    
+
     # configure wandb
     if args.wandb:
         # initialize wandb
         model_name = (args.net.split('(')[0]).split('.')[-1]
         wandb.init(project="RELFM", entity="bpiyush", name=model_name + f"-batches-{args.num_debug_batches}")
-        
+
         # add arguments
         wandb.config.update(vars(args))
 
@@ -124,7 +124,7 @@ if __name__ == '__main__':
     db = [data_sources[key] for key in args.train_data]
     db = eval(args.data_loader.replace('`data`',','.join(db)).replace('\n',''))
     if args.debug:
-        
+
         state = np.random.get_state()
         np.random.seed(0)
         subset_indices = np.random.choice(len(db), size=min(len(db), args.num_debug_batches * args.batch_size), replace=False)
@@ -139,7 +139,7 @@ if __name__ == '__main__':
     print("\n>> Creating net = " + args.net)
     net = eval(args.net)
     print(f" ( Model size: {common.model_size(net)/1000:.0f}K parameters )")
-    
+
     if args.wandb:
         # add model to wandb
         wandb.watch([net])
@@ -148,7 +148,8 @@ if __name__ == '__main__':
     if args.pretrained:
         checkpoint = torch.load(args.pretrained, lambda a,b:a)
         # net.load_pretrained(checkpoint['state_dict'])
-        net.load_state_dict(checkpoint['state_dict'])
+        # net.load_state_dict(checkpoint['state_dict'])
+        net.load_state_dict(checkpoint['state_dict'], strict=False)
 
     # create losses
     loss = args.loss.replace('`sampler`',args.sampler).replace('`N`',str(args.N))
