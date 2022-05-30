@@ -188,7 +188,7 @@ class Steerable_Quad_L2Net(Steerable_BaseNet):
         #     activation6,
         # )
         in_type = self.block5.out_type
-        activation6 = self.get_act_fn(32)
+        activation6 = self.get_act_fn(64)
         out_type = activation6.in_type
         self.block6 = nn.SequentialModule(
             nn.R2Conv(in_type, out_type, kernel_size=3, padding=4, dilation=4),
@@ -222,7 +222,7 @@ class Steerable_Quad_L2Net(Steerable_BaseNet):
 
         # Our own attempt, using 3x3 filters instead of consecutive 2x2's
         in_type = self.block6.out_type
-        activation6 = self.get_act_fn(64)
+        activation6 = self.get_act_fn(128)
         out_type = activation6.in_type
         self.block7 = nn.SequentialModule(
             nn.R2Conv(in_type, out_type, kernel_size=3, padding=2, dilation=2),
@@ -315,7 +315,7 @@ class Steerable_Quad_L2Net_ConfCFS (Steerable_Quad_L2Net):
 
 
 class Discrete_Quad_L2Net_ConfCFS (Steerable_Quad_L2Net):
-    def __init__(self, r2_act=None, fourier=False, num_rotations=8):
+    def __init__(self, r2_act=None, fourier=False, num_rotations=4):
         print(f"Running for C{num_rotations}!")
         #TODO: This is hardcoded for now, but works for now.
         if not r2_act:

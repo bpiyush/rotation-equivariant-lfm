@@ -182,14 +182,13 @@ def apply_clean_rotation(image, degrees, H=np.eye(3)):
     
     # resize rotated_cropped image to original dimensions
     # credits: https://stackoverflow.com/questions/16646183/crop-an-image-in-the-centre-using-pil
-    W, H = image.size
-    rotated_cropped_resized, H_resize = resize(rotated_cropped, W, H)
+    rotated_cropped_resized, H_resize = resize(rotated_cropped, image.size[0], image.size[1])
     
     # combine the homographies
     H_combined = H_resize @ H_crop @ H_rot
 
     image_cropped, _  = center_crop(image, rotated_cropped.size[0], rotated_cropped.size[1])
-    image_cropped_resized, _  = resize(image_cropped, W, H)
-    H_without_rot = H_resize @ H_crop
+    image_cropped_resized, _  = resize(image_cropped, image.size[0], image.size[1])
+    H_without_rot = H_resize @ H_crop @ H
     
     return rotated_cropped_resized, H_combined, image_cropped_resized, H_without_rot
