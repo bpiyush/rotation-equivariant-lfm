@@ -1,4 +1,5 @@
 """Geometric utils."""
+import math
 import numpy as np
 from PIL import Image
 from typing import List, Union
@@ -108,3 +109,87 @@ def append_rotation_to_homography(H, rotation, width, height):
     H_rotation = T_center_to_topleft @ R @ T_topleft_to_center 
     H_combined = H_rotation @ H 
     return H_combined
+
+
+def center_crop(im, new_width, new_height):
+    width, height = im.size
+
+    left = (width - new_width)/2
+    top = (height - new_height)/2
+    right = (width + new_width)/2
+    bottom = (height + new_height)/2
+
+    # Crop the center of the image
+    im = im.crop((left, top, right, bottom))
+    
+    H_crop = np.eye(3)
+    H_crop[0, 2] = -left
+    H_crop[1, 2] = -top
+    
+    return im, H_crop
+
+
+def resize(im, new_width, new_height):
+    width, height = im.size
+    im = im.resize((new_width, new_height))
+
+    sx = new_width / width
+    sy = new_height / height
+    H_resize = np.array([
+        [sx, 0., 0.],
+        [0., sy, 0.],
+        [0., 0., 1.],
+    ])
+    
+    return im, H_resize
+
+
+def apply_clean_rotation(image, degrees, H=np.eye(3)):
+    """
+    Applies rotation to an image followed by cropping to clean out black areas.
+    
+    Args:
+        image (np.ndarray): input image
+        degrees (int): rotation in degrees
+        H (np.ndarray): homography matrix, (optional) defaults to $I_{3}$
+    
+    Returns:
+        (tuple): transformed image and homography
+    """
+    original_width, original_height = image.size
+    
+    # rotate the image
+    rotated = image.rotate(degrees)
+    H_rot = append_rotation_to_homography(
+        H=H,
+        rotation=degrees,
+        width=image.size[0],
+        height=image.size[1],
+    )
+    
+    # crop rotated image to ignore black areas
+    # credits: https://stackoverflow.com/questions/21346670/cropping-rotated-image-with-same-aspect-ratio
+    aspect_ratio = float(image.size[0]) / image.size[1]
+    rotated_aspect_ratio = float(rotated.size[0]) / rotated.size[1]
+    angle = math.fabs(degrees) * math.pi / 180
+    if aspect_ratio < 1:
+        total_height = float(image.size[0]) / rotated_aspect_ratio
+    else:
+        total_height = float(image.size[1])
+    h = total_height / (aspect_ratio * math.sin(angle) + math.cos(angle))
+    w = h * aspect_ratio
+    rotated_cropped, H_crop = center_crop(rotated, w, h)
+    
+    # resize rotated_cropped image to original dimensions
+    # credits: https://stackoverflow.com/questions/16646183/crop-an-image-in-the-centre-using-pil
+    W, H = image.size
+    rotated_cropped_resized, H_resize = resize(rotated_cropped, W, H)
+    
+    # combine the homographies
+    H_combined = H_resize @ H_crop @ H_rot
+
+    image_cropped, _  = center_crop(image, rotated_cropped.size[0], rotated_cropped.size[1])
+    image_cropped_resized, _  = resize(image_cropped, W, H)
+    H_without_rot = H_resize @ H_crop
+    
+    return rotated_cropped_resized, H_combined, image_cropped_resized, H_without_rot
