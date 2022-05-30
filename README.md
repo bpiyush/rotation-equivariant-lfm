@@ -28,6 +28,19 @@ module load Anaconda3/2021.05
 conda activate relfm-v1.0
 ```
 
+## Pretrained models
+
+We provide checkpoints to models trained on the Aachen dataset following R2D2. The key models are tabulated as follows:
+
+| Model | Description | Checkpoint |
+| --- | --- | --- |
+| R2D2 | R2D2 baseline | [r2d2_WASF_N16.pt](./trained_models/r2d2_WASF_N16.pt) |
+| C3 | Discrete group C3 model from C-3PO family |  [finalmodelC3_epoch_2_4x16_1x32_1x64_2x128.pt](trained_models/finalmodelC3_epoch_2_4x16_1x32_1x64_2x128.pt) |
+| C4 | Discrete group C4 model from C-3PO family |  [finalmodelC4_epoch_5_4x16_1x32_1x64_2x128.pt](trained_models/finalmodelC4_epoch_5_4x16_1x32_1x64_2x128.pt) |
+| C8 | Discrete group C8 model from C-3PO family |  [finalmodelC8_epoch_1_4x16_1x32_1x64_2x128.pt](trained_models/finalmodelC8_epoch_1_4x16_1x32_1x64_2x128.pt) |
+| SO2 | Continuous group SO2 model from C-3PO family |  [finalmodelSO2_epoch_17_4x16_1x32_1x64_2x128.pt](trained_models/finalmodelSO2_epoch_17_4x16_1x32_1x64_2x128.pt) |
+
+Note that the equivariant models are selected based on early stopping and in general, they converge faster than the non-equivariant models.
 
 ## Getting started
 
