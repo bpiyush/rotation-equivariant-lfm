@@ -165,7 +165,7 @@ if __name__ == "__main__":
         rotation_grid, img2_indices_grid = rotation_grid.flatten(), img2_indices_grid.flatten()
 
         iterator = tqdm_iterator(
-            range(len(rotation_grid)), desc=f"Generating predictions for {sequence_name}",
+            range(len(rotation_grid)), desc=f"Generating predictions for {sequence_name} ({counter}/{len(sequences)})\t\t",
         )
         for i in iterator:
             rotation, img2_index = rotation_grid[i], img2_indices_grid[i]
