@@ -172,11 +172,12 @@ def apply_clean_rotation(image, degrees, H=np.eye(3)):
     aspect_ratio = float(image.size[0]) / image.size[1]
     rotated_aspect_ratio = float(rotated.size[0]) / rotated.size[1]
     angle = math.fabs(degrees) * math.pi / 180
+
     if aspect_ratio < 1:
         total_height = float(image.size[0]) / rotated_aspect_ratio
     else:
         total_height = float(image.size[1])
-    h = total_height / (aspect_ratio * math.sin(angle) + math.cos(angle))
+    h = total_height / (aspect_ratio * np.abs(math.sin(angle)) + np.abs(math.cos(angle)))
     w = h * aspect_ratio
     rotated_cropped, H_crop = center_crop(rotated, w, h)
     

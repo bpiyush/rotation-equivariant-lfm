@@ -70,8 +70,9 @@ def show_grid_of_images(
 
     if save:
         plt.savefig(save_path, bbox_inches='tight')
-
-    plt.show()
+        plt.close()
+    else:
+        plt.show()
 
 
 def show_keypoint_matches(

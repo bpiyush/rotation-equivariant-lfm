@@ -13,7 +13,7 @@ from lib.r2d2.extract import extract_keypoints_modified, load_network
 from relfm.utils.log import print_update, tqdm_iterator
 from relfm.utils.visualize import show_images_with_keypoints, check_kps_with_homography
 from relfm.utils.matching import evaluate_matching_with_rotation, analyze_result
-from relfm.utils.geometry import resize, apply_clean_rotation
+from relfm.utils.geometry import append_rotation_to_homography, apply_homography_to_keypoints, resize, apply_clean_rotation
 
 
 def configure_save_dir(output_base_dir, ckpt_path, dataset_name="hpatches"):
@@ -79,6 +79,10 @@ if __name__ == "__main__":
         "--sanity_check", action="store_true",
         help="Whether to run sanity checks on the extracted keypoints.",
     )
+    parser.add_argument(
+        "--crop_post_rotation", action="store_true",
+        help="Whether to crop the keypoints after applying the rotation.",
+    )
     args = parser.parse_args()
 
     assert isdir(args.data_dir), \
@@ -114,7 +118,6 @@ if __name__ == "__main__":
     if args.seq_prefix is not None:
         sequences = [s for s in sequences if args.seq_prefix in s]
     rotations = np.arange(0, 360 + 1, args.gap_between_rotations, dtype=int)
-    rotations = [0, 30, 45, 90]
     print_update(
         f"Generating predictions on {len(sequences)} "\
             f"sequences for {len(rotations)} rotations per image.",
@@ -128,72 +131,32 @@ if __name__ == "__main__":
 
         # load source image
         img1_path = join(sequence, "1.ppm")
-        img1 = Image.open(img1_path)
+        img1_raw = Image.open(img1_path)
+
+        # define base homography for source image
         H1_raw = np.eye(3)
-        original_width, original_height = img1.size
-
-        # if args.downsize:
-            # img1 = img1.resize((args.imsize, args.imsize))
-
-        #     if args.sanity_check:
-        #         img1_to_check = [img1]
-        #         img1_subtitles = ["Original"]
-        #         H1_to_check = np.eye(3)
-
-            # downsize the image to (args.imsize, args.imsize)
-            # for e.g., 480x640 -> 300x300
-            # img1, H1 = resize(img1, args.imsize, args.imsize)
-
-        #     if args.sanity_check:
-        #         img1_to_check.append(img1)
-        #         img1_subtitles.append("Downsized")
-        #         H1_to_check = H1_to_check @ H1
-
-        #     # center crop the image according to a rotation
-        #     # NOTE: this does not rotate the image, only crops based on rotation
-        #     _, _, img1, H1 = apply_clean_rotation(image=img1, degrees=rotation, H=H1)
-
-        #     if args.sanity_check:
-        #         img1_to_check.append(img1)
-        #         img1_subtitles.append("Cropped")
-        #         H1_to_check = H1_to_check @ H1
-
-        # # generate outputs for source image
-        # outputs = extract_keypoints_modified(
-        #     [img1], model, top_k=args.num_keypoints, verbose=True,
-        # )[0]
-
-        # import ipdb; ipdb.set_trace()
-
-        # # save outputs
-        # os.makedirs(join(save_dir, sequence_name), exist_ok=True)
-        # save_path = join(save_dir, sequence_name, "1.npy")
-        # np.save(save_path, outputs)
 
         # possible indices of the target images
         img2_indices = np.arange(2, 7)
 
         # load all target images at once
-        img2s = [Image.open(join(sequence, f"{i}.ppm")) for i in img2_indices]
-        H2s_raw = [np.eye(3) for _ in img2s]
+        img2s_raw = [Image.open(join(sequence, f"{i}.ppm")) for i in img2_indices]
+
+        # define base homography for each target image
+        H2s_raw = [np.eye(3) for _ in img2s_raw]
+
         if args.downsize:
-            # img2s = [img2.resize((args.imsize, args.imsize)) for img2 in img2s]
-
             # downsize the source image to (args.imsize, args.imsize)
-            img1, H1_raw = resize(img1, args.imsize, args.imsize)
+            img1_resized, H1_raw = resize(img1_raw, args.imsize, args.imsize)
 
-            
-            for j in range(len(img2s)):
-
-                # downsize the image to (args.imsize, args.imsize)
-                img2s[j], H2 = resize(img2s[j], args.imsize, args.imsize)
-
-                # # center crop the image according to a rotation
-                # # NOTE: this does not rotate the image, only crops based on rotation
-                # img2s[j], H2, _, _ = apply_clean_rotation(
-                #     image=img2s[j], degrees=rotation, H=H2,
-                # )
-                H2s_raw[j] = H2
+            # downsize the target images to (args.imsize, args.imsize)
+            img2s_resized = []
+            for j in range(len(img2s_raw)):
+                img, H2s_raw[j] = resize(img2s_raw[j], args.imsize, args.imsize)
+                img2s_resized.append(img)
+        else:
+            img1_resized = img1_raw
+            img2s_resized = img2s_raw
 
         # load all homographies
         H1to2s = [np.loadtxt(join(sequence, f"H_1_{i}")) for i in img2_indices]
@@ -207,39 +170,43 @@ if __name__ == "__main__":
         for i in iterator:
             rotation, img2_index = rotation_grid[i], img2_indices_grid[i]
 
-            img2 = img2s[img2_index - 2]
+            img1 = img1_resized.copy()
+
+            # index target image
+            img2 = img2s_resized[img2_index - 2].copy()
+
+            # load base homography for source and target image
+            H1 = H1_raw.copy()
             H2 = H2s_raw[img2_index - 2].copy()
 
-            H1 = H1_raw.copy()
-            # img2_rotated = img2.rotate(rotation)
+            if args.crop_post_rotation:
+                # center crop the source image according to the rotation
+                # NOTE: this does not rotate the image, only crops based on rotation
+                _, _, img1_transformed, H1 = apply_clean_rotation(
+                    image=img1, degrees=rotation, H=H1,
+                )
 
-            # center crop the source image according to the rotation
-            # NOTE: this does not rotate the image, only crops based on rotation
-            # print("H1 (before): ", H1)
-            _, _, img1_transformed, H1 = apply_clean_rotation(
-                image=img1, degrees=rotation, H=H1,
-            )
-            # print("H1 (after): ", H1)
-
-            # rotate + center crop the target image
-            # NOTE: this applies rotation and then cropping
-            # print("H2 (before): ", H2)
-            img2_transformed, H2, _, _ = apply_clean_rotation(
-                image=img2, degrees=rotation, H=H2,
-            )
-            # print("H2 (after): ", H2)
+                # rotate + center crop the target image
+                # NOTE: this applies rotation and then cropping
+                img2_transformed, H2, _, _ = apply_clean_rotation(
+                    image=img2, degrees=rotation, H=H2,
+                )
+            else:
+                img1_transformed = img1
+                img2_transformed = img2.rotate(rotation)
+                H2 = append_rotation_to_homography(H2, rotation, img1.size[0], img1.size[1])
 
             # transform the homography accordingly
             H = H1to2s[img2_index - 2].copy()
             H_transformed = H2 @ H @ np.linalg.inv(H1)
 
-            if args.sanity_check:
+            if args.sanity_check and rotation in [0, 30, 45, 90, 135, 180]:
                 check_kps_with_homography(
                     img1=img1_transformed,
                     img2=img2_transformed,
                     H=H_transformed,
                     save=True,
-                    save_path=f"sanity_check_kps_{rotation}.png",
+                    save_path=f"./sample_images/sanity_check_kps_rotation_{rotation}.png",
                 )
                 # check_kps_with_homography(
                 #     img1, img1_transformed, H1, save=True, save_path="sanity_check_kps_1.png",
@@ -247,7 +214,7 @@ if __name__ == "__main__":
                 # check_kps_with_homography(
                 #     img2, img2_transformed, H2, save=True, save_path="sanity_check_kps_2.png",
                 # )
-                import ipdb; ipdb.set_trace()
+            
 
             # if args.downsize:
 
@@ -280,7 +247,8 @@ if __name__ == "__main__":
             # np.save(save_path, outputs)
         
         print(f"Finished processing sequence {sequence_name} ({counter}/{len(sequences)}).")
-        counter += 1 
+        counter += 1
 
-        if args.debug:
+        if args.debug or args.sanity_check:
+            print(">>>> Sanity check done for 1 sequence. Breaking loop.")
             break
