@@ -13,6 +13,7 @@ from lib.r2d2.extract import extract_keypoints_modified, load_network
 from relfm.utils.log import print_update, tqdm_iterator
 from relfm.utils.visualize import show_images_with_keypoints
 from relfm.utils.matching import evaluate_matching_with_rotation, analyze_result
+from relfm.utils.geometry import resize, apply_clean_rotation
 
 
 def configure_save_dir(output_base_dir, ckpt_path, dataset_name="hpatches"):
@@ -38,7 +39,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--model_ckpt_path", "-m", type=str,
-        default=join(REPO_PATH, "checkpoints/r2d2_WASF_N16.pt"),
+        default=join(REPO_PATH, "trained_models/epoch_3_SO2_4x16_1x32_1x64_2x128.pt"),
         help="Path to the (pretrained) R2D2 model checkpoint.",
     )
     parser.add_argument(
@@ -84,6 +85,7 @@ if __name__ == "__main__":
     
     # create base output directory
     os.makedirs(args.output_dir, exist_ok=True)
+
     # configure save directory
     save_dir = configure_save_dir(
         args.output_dir, args.model_ckpt_path, dataset_name="hpatches",
@@ -121,12 +123,22 @@ if __name__ == "__main__":
         original_width, original_height = img1.size
 
         if args.downsize:
-            img1 = img1.resize((args.imsize, args.imsize))
+            # img1 = img1.resize((args.imsize, args.imsize))
+
+            # downsize the image to (args.imsize, args.imsize)
+            # for e.g., 480x640 -> 300x300
+            img1, H1 = resize(img1, (args.imsize, args.imsize))
+
+            # center crop the image according to a rotation
+            # NOTE: this does not rotate the image, only crops based on rotation
+            _, _, img1, H1 = apply_clean_rotation(image=img1, degrees=rotation, H=H1)
 
         # generate outputs for source image
         outputs = extract_keypoints_modified(
             [img1], model, top_k=args.num_keypoints, verbose=False,
         )[0]
+
+        import ipdb; ipdb.set_trace()
 
         # save outputs
         sequence_name = os.path.basename(sequence)
@@ -136,10 +148,23 @@ if __name__ == "__main__":
 
         # possible indices of the target images
         img2_indices = np.arange(2, 7)
+
         # load all target images at once
         img2s = [Image.open(join(sequence, f"{i}.ppm")) for i in img2_indices]
+        H2s = []
         if args.downsize:
-            img2s = [img2.resize((args.imsize, args.imsize)) for img2 in img2s]
+            # img2s = [img2.resize((args.imsize, args.imsize)) for img2 in img2s]
+
+            for j in range(len(img2s)):
+                # downsize the image to (args.imsize, args.imsize)
+                img2s[j], H2 = resize(img2s[j], (args.imsize, args.imsize))
+
+                # center crop the image according to a rotation
+                # NOTE: this does not rotate the image, only crops based on rotation
+                img2s[j], H2, _, _ = apply_clean_rotation(
+                    image=img2s[j], degrees=rotation, H=H2,
+                )
+                H2s.append(H2)
 
         # load all homographies
         Hs = [np.loadtxt(join(sequence, f"H_1_{i}")) for i in img2_indices]
