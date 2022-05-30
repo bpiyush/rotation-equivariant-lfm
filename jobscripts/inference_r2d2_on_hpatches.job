@@ -5,7 +5,7 @@
 #SBATCH --job-name=R2D2
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=2
-#SBATCH --time=48:00:00
+#SBATCH --time=3:00:00
 #SBATCH --mem=32000M
 #SBATCH --output=slurm_output_%A.out
 
@@ -17,21 +17,31 @@ module load Anaconda3/2021.05
 source deactivate
 source activate relfm-v1.0
 
+# set default value of ckpt
+ckpt=trained_models/r2d2_WASF_N16.pt
+
+# set default value of data_dir
+data_dir=$PWD/data/hpatches-sequences-release/
+
+
+echo "----------------------------------------"
+echo "Running inference on hpatches dataset"
+echo "Checkpoint: $ckpt"
+echo "Data directory: $data_dir"
+echo "----------------------------------------"
+
 # Run your code
 # WARNING: This needs to be run from the root of the repo
-data_dir=$PWD/data/hpatches-sequences-release/
-# model_ckpt_path=$PWD/checkpoints/r2d2_WASF_N16.pt
-# model_ckpt_path=$PWD/trained_models/epoch_16_test_model.pt
-# model_ckpt_path=$PWD/trained_models/epoch_3_SO2_4x16_1x32_1x64_2x128.pt
-# model_ckpt_path=$PWD/trained_models/epoch_3_C8_4x16_1x32_1x64_2x128.pt
-# model_ckpt_path=$PWD/trained_models/epoch_17_SO2_4x16_1x32_1x64_2x128.pt
-# model_ckpt_path=$PWD/trained_models/epoch_0_SO2_downsamp_4x16_2x32_1x64_1x128.pt
-model_ckpt_path=$PWD/trained_models/epoch_3_SO2_4x16_1x32_1x64_2x128.pt
+
+# set checkpoint path
+model_ckpt_path=$PWD/$ckpt
+
+# set output path
 output_dir=$HOME/outputs/rotation-equivariant-lfm
+
 python relfm/inference/r2d2_on_hpatches.py \
     --data_dir $data_dir \
     --model_ckpt_path $model_ckpt_path \
     --output_dir $output_dir \
     --downsize \
-    --imsize 300 \
-    --crop_post_rotation
+    --imsize 300 

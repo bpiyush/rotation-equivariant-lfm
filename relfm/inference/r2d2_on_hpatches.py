@@ -14,6 +14,11 @@ from relfm.utils.log import print_update, tqdm_iterator
 from relfm.utils.visualize import show_images_with_keypoints, check_kps_with_homography
 from relfm.utils.matching import evaluate_matching_with_rotation, analyze_result
 from relfm.utils.geometry import append_rotation_to_homography, apply_homography_to_keypoints, resize, apply_clean_rotation
+from lib.r2d2.nets.patchnet import Quad_L2Net_ConfCFS
+from lib.r2d2.nets.patchnet_equivariant import (
+    Discrete_Quad_L2Net_ConfCFS,
+    Steerable_Quad_L2Net_ConfCFS,
+)
 
 
 def configure_save_dir(output_base_dir, ckpt_path, dataset_name="hpatches"):
@@ -101,17 +106,16 @@ if __name__ == "__main__":
 
     # load network
     print_update("Loading network.")
-    from lib.r2d2.nets.patchnet_equivariant import (
-        Discrete_Quad_L2Net_ConfCFS,
-        Steerable_Quad_L2Net_ConfCFS,
-    )
-    checkpoint = torch.load(args.model_ckpt_path, map_location="cpu")
-    model = eval(checkpoint['net'])
-    # model.train()
-    model.load_state_dict(checkpoint['state_dict'], strict=False)
-    # model.eval()
-    
-    # model = load_network(args.model_ckpt_path)
+    if "r2d2" in args.model_ckpt_path:
+        print("Loading R2D2 model.")
+        model = load_network(args.model_ckpt_path)
+        model = model.eval()
+    else:
+        print("Loading R2D2-like equivariant model.")
+        checkpoint = torch.load(args.model_ckpt_path, map_location="cpu")
+        model = eval(checkpoint['net'])
+        model.load_state_dict(checkpoint['state_dict'], strict=False)
+        model = model.eval()
 
     # load sequence paths
     sequences = sorted(glob(join(args.data_dir, "*")))
