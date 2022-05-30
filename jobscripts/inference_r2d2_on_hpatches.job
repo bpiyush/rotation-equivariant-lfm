@@ -34,5 +34,4 @@ python relfm/inference/r2d2_on_hpatches.py \
     --output_dir $output_dir \
     --downsize \
     --imsize 300 \
-    --sanity_check \
     --crop_post_rotation
