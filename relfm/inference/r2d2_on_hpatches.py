@@ -208,43 +208,52 @@ if __name__ == "__main__":
                     save=True,
                     save_path=f"./sample_images/sanity_check_kps_rotation_{rotation}.png",
                 )
-                # check_kps_with_homography(
-                #     img1, img1_transformed, H1, save=True, save_path="sanity_check_kps_1.png",
-                # )
-                # check_kps_with_homography(
-                #     img2, img2_transformed, H2, save=True, save_path="sanity_check_kps_2.png",
-                # )
-            
 
-            # if args.downsize:
+            # >>> generate outputs for source image and save them
+            outputs = extract_keypoints_modified(
+                [img1_transformed], model, top_k=args.num_keypoints, verbose=False,
+            )[0]
+            outputs.update(
+                {
+                    "rotation": rotation,
+                    "H": H_transformed,
+                    "H1": H1,
+                }
+            )
+            kps1 = outputs["keypoints"]
+            # save outputs
+            save_path = join(
+                save_dir, sequence_name, f"1_rotation_{rotation}.npy",
+            )
+            np.save(save_path, outputs)
 
-            #     # apply resing effect on H
-            #     sx = args.imsize / original_width
-            #     sy = args.imsize / original_height
+            # >>> generate outputs for target image, rotated by `rotation` degrees
+            outputs = extract_keypoints_modified(
+                [img2_transformed], model, top_k=args.num_keypoints, verbose=False,
+            )[0]
+            outputs.update(
+                {
+                    "rotation": rotation,
+                    "H": H_transformed,
+                    "H2": H2,
+                }
+            )
+            kps2 = outputs["keypoints"]
+            # save outputs
+            save_path = join(
+                save_dir, sequence_name, f"{img2_index}_rotation_{rotation}.npy",
+            )
+            np.save(save_path, outputs)
 
-            #     H_for_scaling = np.array([
-            #         [sx, 0., 0.],
-            #         [0., sy, 0.],
-            #         [0., 0., 1.],
-            #     ])
-            #     H = H_for_scaling @ H @ np.linalg.inv(H_for_scaling)
-
-            # # generate outputs for target image, rotated by `rotation` degrees
-            # outputs = extract_keypoints_modified(
-            #     [img2_rotated], model, top_k=args.num_keypoints, verbose=False,
-            # )[0]
-            # outputs.update(
-            #     {
-            #         "rotation": rotation,
-            #         "H": H,
-            #     }
-            # )
-
-            # # save outputs
-            # save_path = join(
-            #     save_dir, sequence_name, f"{img2_index}_rotation_{rotation}.npy",
-            # )
-            # np.save(save_path, outputs)
+            if args.sanity_check and rotation in [45]:
+                check_kps_with_homography(
+                    img1=img1_transformed,
+                    img2=img2_transformed,
+                    H=H_transformed,
+                    kps=kps1,
+                    save=True,
+                    save_path=f"./sample_images/sanity_check_computed_kps_rotation_{rotation}.png",
+                )
         
         print(f"Finished processing sequence {sequence_name} ({counter}/{len(sequences)}).")
         counter += 1
