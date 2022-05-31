@@ -29,9 +29,14 @@ if __name__ == "__main__":
     model_ckpt_paths = {
         # "R2D2": join(REPO_PATH, "checkpoints/r2d2_WASF_N16.pt"),
         # "R2D2 - $C_{4}$": join(REPO_PATH, "trained_models/epoch_16_test_model.pt"),
-        "R2D2 - $SO_{2}$ (Ep 4)": join(REPO_PATH, "trained_models/epoch_3_SO2_4x16_1x32_1x64_2x128.pt"),
+        # "R2D2 - $SO_{2}$ (Ep 4)": join(REPO_PATH, "trained_models/epoch_3_SO2_4x16_1x32_1x64_2x128.pt"),
         # "R2D2 - $C_{8}$ (Ep 4)": join(REPO_PATH, "trained_models/epoch_3_C8_4x16_1x32_1x64_2x128.pt"),
         # "R2D2 - $SO_{2}$ (Ep 18)": join(REPO_PATH, "trained_models/epoch_17_SO2_4x16_1x32_1x64_2x128.pt"),
+        "R2D2": join(REPO_PATH, "trained_models/r2d2_WASF_N16.pt"),
+        "C-3PO - $C_{3}$": join(REPO_PATH, "trained_models/finalmodelC3_epoch_2_4x16_1x32_1x64_2x128.pt"),
+        "C-3PO - $C_{4}$": join(REPO_PATH, "trained_models/finalmodelC4_epoch_5_4x16_1x32_1x64_2x128.pt"),
+        "C-3PO - $C_{8}$": join(REPO_PATH, "trained_models/finalmodelC8_epoch_1_4x16_1x32_1x64_2x128.pt"),
+        "C-3PO - $SO(2)$": join(REPO_PATH, "trained_models/finalmodelSO2_epoch_17_4x16_1x32_1x64_2x128.pt"),
     }
 
     output_dir = join(expanduser("~"), "outputs/rotation-equivariant-lfm")
@@ -45,13 +50,13 @@ if __name__ == "__main__":
     imsize=300
 
     ignore_cache = True
-    overwrite_cache = False
+    overwrite_cache = True
 
     ransac = True
     ransac_threshold = 3.
 
-    sanity_check = False
-    crop_post_rotation = True
+    sanity_check = True
+    crop_post_rotation = False
 
     results = dict()
 
@@ -65,7 +70,7 @@ if __name__ == "__main__":
     thresholds = [3.]
 
     # set this to true to see intermediate outputs/messages
-    verbose = False
+    verbose = True
 
     for model_name, model_ckpt_path in model_ckpt_paths.items():
 
@@ -190,6 +195,8 @@ if __name__ == "__main__":
                         [img1_transformed, img2_transformed],
                         [kps1, kps2],
                         radius=2,
+                        save=True,
+                        save_path=join(REPO_PATH, f"sample_images/sanity_check_eval_kps_{rotation}.png"),
                     )
 
                 # perform matching
@@ -213,6 +220,7 @@ if __name__ == "__main__":
                 if verbose and rotation == 30 and img2_index == 4:
                     analyze_result(
                         img1_transformed, img2_transformed, result, K=10, radius=5,
+                        save=True, save_dir=join(REPO_PATH, "sample_images/"),
                     )
 
                 # compute accuracy across various thresholds
@@ -266,4 +274,4 @@ if __name__ == "__main__":
     ax.legend(fontsize=17, bbox_to_anchor=(1.25, 0.95), title="Method",)
     fig_dir = "./Figures"
     os.makedirs(fig_dir, exist_ok=True)
-    plt.savefig(join(fig_dir, "mma_hpatches_with_crop_rotation_v2.0.pdf"))
+    plt.savefig(join(fig_dir, "final_mma_hpatches_v2.0.pdf"))

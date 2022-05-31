@@ -113,7 +113,19 @@ if __name__ == "__main__":
     else:
         print("Loading R2D2-like equivariant model.")
         checkpoint = torch.load(args.model_ckpt_path, map_location="cpu")
-        model = eval(checkpoint['net'])
+
+        model_args = dict()
+        if "C4" in args.model_ckpt_path:
+            model_args.update(dict(num_rotations=4))
+        elif "C3" in args.model_ckpt_path:
+            model_args.update(dict(num_rotations=3))
+        elif "C8" in args.model_ckpt_path:
+            model_args.update(dict(num_rotations=8))
+        else:
+            print("Loading SO2 model.")
+        print("Loading model with args:", model_args)
+
+        model = eval(checkpoint['net'].split("()")[0])(**model_args)
         model.load_state_dict(checkpoint['state_dict'], strict=False)
         model = model.eval()
 
@@ -229,6 +241,7 @@ if __name__ == "__main__":
             save_path = join(
                 save_dir, sequence_name, f"1_rotation_{rotation}.npy",
             )
+            os.makedirs(os.path.dirname(save_path), exist_ok=True)
             np.save(save_path, outputs)
 
             # >>> generate outputs for target image, rotated by `rotation` degrees
@@ -247,6 +260,7 @@ if __name__ == "__main__":
             save_path = join(
                 save_dir, sequence_name, f"{img2_index}_rotation_{rotation}.npy",
             )
+            os.makedirs(os.path.dirname(save_path), exist_ok=True)
             np.save(save_path, outputs)
 
             if args.sanity_check and rotation in [45]:

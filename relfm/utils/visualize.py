@@ -142,7 +142,7 @@ def get_concat_v(im1, im2):
     return dst
 
 
-def show_images_with_keypoints(images: list, kps: list, radius=15, color=(0, 220, 220), figsize=(10, 8), return_images=False):
+def show_images_with_keypoints(images: list, kps: list, radius=15, color=(0, 220, 220), figsize=(10, 8), return_images=False, save=False, save_path="sample.png"):
     assert len(images) == len(kps)
 
     # generate
@@ -152,7 +152,7 @@ def show_images_with_keypoints(images: list, kps: list, radius=15, color=(0, 220
         images_with_kps.append(img_with_kps)
     
     # show
-    show_grid_of_images(images_with_kps, n_cols=len(images), figsize=figsize)
+    show_grid_of_images(images_with_kps, n_cols=len(images), figsize=figsize, save=save, save_path=save_path)
     
     if return_images:
         return images_with_kps

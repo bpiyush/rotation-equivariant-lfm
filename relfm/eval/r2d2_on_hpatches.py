@@ -24,12 +24,12 @@ if __name__ == "__main__":
     data_dir = join(REPO_PATH, "data/hpatches-sequences-release/")
 
     model_ckpt_paths = {
-        "R2D2": join(REPO_PATH, "checkpoints/r2d2_WASF_N16.pt"),
-        "R2D2 - $C_{4}$": join(REPO_PATH, "trained_models/epoch_16_test_model.pt"),
-        "R2D2 - $SO_{2}$ (Ep 4)": join(REPO_PATH, "trained_models/epoch_3_SO2_4x16_1x32_1x64_2x128.pt"),
-        "R2D2 - $C_{8}$ (Ep 4)": join(REPO_PATH, "trained_models/epoch_3_C8_4x16_1x32_1x64_2x128.pt"),
-        "R2D2 - $SO_{2}$ (Ep 18)": join(REPO_PATH, "trained_models/epoch_17_SO2_4x16_1x32_1x64_2x128.pt"),
-    #     "R2D2 - $SO_{2}$ (Ep 0)": join(REPO_PATH, "trained_models/epoch_0_SO2_downsamp_4x16_2x32_1x64_1x128.pt"),
+        "R2D2": join(REPO_PATH, "trained_models/r2d2_WASF_N16.pt"),
+    #     "R2D2 - $C_{4}$": join(REPO_PATH, "trained_models/epoch_16_test_model.pt"),
+    #     "R2D2 - $SO_{2}$ (Ep 4)": join(REPO_PATH, "trained_models/epoch_3_SO2_4x16_1x32_1x64_2x128.pt"),
+    #     "R2D2 - $C_{8}$ (Ep 4)": join(REPO_PATH, "trained_models/epoch_3_C8_4x16_1x32_1x64_2x128.pt"),
+    #     "R2D2 - $SO_{2}$ (Ep 18)": join(REPO_PATH, "trained_models/epoch_17_SO2_4x16_1x32_1x64_2x128.pt"),
+    # #     "R2D2 - $SO_{2}$ (Ep 0)": join(REPO_PATH, "trained_models/epoch_0_SO2_downsamp_4x16_2x32_1x64_1x128.pt"),
     }
 
     output_dir = join(expanduser("~"), "outputs/rotation-equivariant-lfm")
@@ -199,4 +199,4 @@ if __name__ == "__main__":
     ax.legend(fontsize=17, bbox_to_anchor=(1.25, 0.95), title="Method",)
     fig_dir = "./Figures"
     os.makedirs(fig_dir, exist_ok=True)
-    plt.savefig(join(fig_dir, "mma_hpatches_v1.0.pdf"))
+    plt.savefig(join(fig_dir, "final_mma_hpatches_v1.0.pdf"))
