@@ -12,7 +12,7 @@ import torch
 from lib.r2d2.extract import extract_keypoints_modified
 from relfm.utils.paths import REPO_PATH
 from relfm.utils.log import print_update, tqdm_iterator
-from relfm.utils.visualize import show_images_with_keypoints, check_kps_with_homography, set_latex_fonts
+from relfm.utils.visualize import show_images_with_keypoints, check_kps_with_homography, set_latex_fonts, get_colors
 from relfm.utils.matching import evaluate_matching_with_rotation, analyze_result
 from relfm.utils.geometry import (
     append_rotation_to_homography, apply_homography_to_keypoints, resize, apply_clean_rotation,
@@ -49,13 +49,13 @@ if __name__ == "__main__":
     downsize=True
     imsize=300
 
-    ignore_cache = True
+    ignore_cache = False
     overwrite_cache = True
 
     ransac = True
     ransac_threshold = 3.
 
-    sanity_check = True
+    sanity_check = False
     crop_post_rotation = False
 
     results = dict()
@@ -70,7 +70,7 @@ if __name__ == "__main__":
     thresholds = [3.]
 
     # set this to true to see intermediate outputs/messages
-    verbose = True
+    verbose = False
 
     for model_name, model_ckpt_path in model_ckpt_paths.items():
 
@@ -249,29 +249,41 @@ if __name__ == "__main__":
         results[model_name] = mma_avg
 
     # plot results
-    fig, ax = plt.subplots(1, 1, figsize=(12, 8))
+    fig, ax = plt.subplots(1, 1, figsize=(14, 8))
 
     ax.grid(alpha=0.5)
     # ax.set_ylim((0., 1.))
 
     ransac_suffix = " (RANSAC)" if ransac else ""
-    ax.set_title(f"Rotation-equivariance on HPatches dataset {ransac_suffix}", fontsize=23)
-    ax.set_xlabel("Rotation angle ", fontsize=18)
-    ax.set_ylabel("Mean matching accuracy (MMA)", fontsize=18)
+    ax.set_title(f"Rotation-equivariance on HPatches dataset {ransac_suffix}", fontsize=20)
+    ax.set_xlabel("Rotation angle ", fontsize=17)
+    ax.set_ylabel("Mean matching accuracy (MMA)", fontsize=17)
+
+    i = 0
+    colors = get_colors(num_colors=len(results), palette="terrain")
+    colors = ["blue", "gold", "#b355ed", "green", "red"]
+    markers = ["o", "D", "^", "X", "s"]
+    linestyles = ["solid", "dashed", "dashed", "dashed", "solid"]
+    fillstyles = ["full", "none", "none", "none", "full"]
 
     for model_name, mma_avg in results.items():
 
         ax.plot(
             list(mma_avg.keys()),
             list(mma_avg.values()),
-            "--o",
             label=model_name,
             markersize=8,
             linewidth=2.,
+            color=colors[i],
+            marker=markers[i],
+            linestyle=linestyles[i],
+            fillstyle=fillstyles[i],
+
         )
+        i += 1
         ax.set_xticks(list(mma_avg.keys()))
 
-    ax.legend(fontsize=17, bbox_to_anchor=(1.25, 0.95), title="Method",)
+    ax.legend(fontsize=17, bbox_to_anchor=(1., 0.95), title="Method", title_fontsize=18)
     fig_dir = "./Figures"
     os.makedirs(fig_dir, exist_ok=True)
-    plt.savefig(join(fig_dir, "final_mma_hpatches_v2.0.pdf"))
+    plt.savefig(join(fig_dir, "final_mma_hpatches_v3.0.pdf"), bbox_inches='tight')
