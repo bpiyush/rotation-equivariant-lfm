@@ -114,14 +114,9 @@ if __name__ == '__main__':
     if args.wandb:
         # initialize wandb
         model_name = (args.net.split('(')[0]).split('.')[-1]
-<<<<<<< HEAD
-        wandb.init(project="RELFM", entity="bpiyush", name=model_name + f"-batches-{args.num_debug_batches}")
-
-=======
         suffix = "" if not args.debug else  f"-batches-{args.num_debug_batches}"
         wandb.init(project="RELFM", entity="bpiyush", name=model_name + suffix)
-        
->>>>>>> df0125de724e2d97ada14350a87c815e069ef857
+
         # add arguments
         wandb.config.update(vars(args))
 
