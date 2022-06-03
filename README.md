@@ -66,6 +66,10 @@ tar -xvf hpatches-sequences-release.tar.gz
 rm -rf hpatches-sequences-release.tar.gz
 ```
 This shall create a folder `hpatches-sequences-release` in `$HOME/datasets/`.
+Then, symlink it as a folder within the repo.
+```bash
+ln -s $HOME/datasets $HOME/repos/relfm/data
+```
 
 You can check out sample images from the dataset.
 ```bash
