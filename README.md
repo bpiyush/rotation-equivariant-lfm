@@ -149,6 +149,7 @@ A sample qualitative result is shown in the Figure below.
 <p align="center">
   <img width="700" src="./Figures/qual_results_rotation_i_castle_90.png">
 </p>
+The first two columns show the detected keypoints and the last two columns show (correct) matches in green.
 
 
 
