@@ -129,6 +129,13 @@ In case you want to include the C4 variant, you can run the following command.
 python relfm/eval/r2d2_on_hpatches.py --quantitative --models R2D2 "SO(2)" "C_{4}"
 ```
 
+To generative qualitative results, you can run the following command.
+```bash
+python relfm/eval/r2d2_on_hpatches.py --qualitative --models R2D2 "SO(2)" --sequence_to_visualize i_castle --rotation_to_visualize 90
+```
+This will generate a figure at `./Figures/qual_results_rotation_i_castle_90.pdf`.
+
+
 > Note: Our evaluation is partly based on the [notebook](https://github.com/mihaidusmanu/d2-net/blob/master/hpatches_sequences/HPatches-Sequences-Matching-Benchmark.ipynb) provided by [D2-Net](https://github.com/mihaidusmanu/d2-net). 
 
 

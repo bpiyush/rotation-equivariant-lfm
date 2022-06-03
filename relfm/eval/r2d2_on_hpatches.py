@@ -167,11 +167,13 @@ if __name__ == "__main__":
     parser.add_argument(
         "--rotation_to_visualize",
         default=0,
+        type=int,
         help="Rotation to visualize qualitative results",
     )
     parser.add_argument(
         "--target_index_to_visualize",
         default=2,
+        type=int,
         help="Index of the target image in the sequence to plot qualitative results",
     )
     parser.add_argument(
@@ -261,6 +263,7 @@ if __name__ == "__main__":
         print(":::: NOTE: Only performing qualitative analysis, not quantitative analysis.")
         ignore_cache = True
         overwrite_cache = False
+        verbose = True
 
     rotation_to_visualize = args.rotation_to_visualize
     img2_index_to_visualize = args.target_index_to_visualize
@@ -287,6 +290,7 @@ if __name__ == "__main__":
         # computing Mean Matching Accuracy (MMA)
         mma = defaultdict(list)
         counter = 1
+
         for sequence in sequences:
 
             # store sequence name
@@ -462,6 +466,8 @@ if __name__ == "__main__":
     if qualitative_analysis:
         print("Finishing qualitative analysis")
         # plot qualitative results
+        assert set(source_images_with_kps.keys()) == set(model_ckpt_paths.keys())
+        assert set(source_images_with_kps.keys()) == set(target_images_with_kps.keys())
         plot_qualitative_results(
             model_ckpt_paths,
             source_images_with_kps,
