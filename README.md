@@ -1,5 +1,5 @@
-# Rotation-equivariant Local Feature Matching
-Rotation equivariance meets local feature matching
+# C-3PO: Towards Rotation Equivariant Feature Detection and Description
+Rotation equivariance meets local feature matching.
 
 ## Installation
 
@@ -8,11 +8,17 @@ First, clone the repo:
 git clone git@github.com:bpiyush/rotation-equivariant-lfm.git
 ```
 
-Next, follow steps in [here](./setup/README.md) to install the packages in a `conda` environment.
-<!-- You can check if the packages are installed correctly by running:
+<!-- Next, follow steps in [here](./setup/README.md) to install the packages in a `conda` environment. -->
+
+Next, follow the steps to create a `conda` environment.
+
+*TODO*
+
+You can check if the packages are installed correctly by running:
 ```bash
 python setup/check_packages.py
-``` -->
+```
+
 <!-- 
 ## Datasets
 
@@ -92,6 +98,14 @@ First, run inference for R2D2 model.
 ```bash
 sbatch jobscripts/inference_r2d2_on_hpatches.job 
 ```
+This will run inference, generate outputs and save them to the folder:
+`~/outputs/rotation-equivariant-lfm/hpatches/r2d2_WASF_N16`. Depending on your checkpoint name, it will create a new folder for a new checkpoint.
+
+The output shall have 1 folder per image sequence in HPatches, for e.g., `v_home`. Each folder shall contain the following files:
+
+* `1_rotation_R.npy`: the predicted keypoint locations and descriptor vectors for the source image.
+* `t_rotation_R.npy`: the predicted keypoint locations and descriptor vectors for the target image with index `t` and rotation `R`, $\forall t \in \{2, 3, 4, 5, 6\}, R \in \{0, 15, 30, .., 345, 360\}$.
+
 
 Note that in the jobscript, we have set the default checkpoint path to the R2D2 checkpoint. To run inference for 
 SO(2) model, change the `ckpt` variable in `jobscripts/inference_r2d2_on_hpatches.job` to `ckpt=trained_models/finalmodelSO2_epoch_17_4x16_1x32_1x64_2x128.pt`. Then, run
@@ -117,11 +131,9 @@ python relfm/eval/r2d2_on_hpatches.py --quantitative --models R2D2 "SO(2)" "C_{4
 > Note: Our evaluation is partly based on the [notebook](https://github.com/mihaidusmanu/d2-net/blob/master/hpatches_sequences/HPatches-Sequences-Matching-Benchmark.ipynb) provided by [D2-Net](https://github.com/mihaidusmanu/d2-net). 
 
 
-## Getting started
+## Training models from scratch
 
-### Training R2D2 from scratch
-
-1. Refer to the previous section for installation instructions. Activate the environment:
+1. Activate the environment:
     ```bash
     # activate the environment
     conda activate relfm-v1.0
@@ -129,7 +141,7 @@ python relfm/eval/r2d2_on_hpatches.py --quantitative --models R2D2 "SO(2)" "C_{4
     # set the python path
     export PYTHONPATH=$PWD/lib/r2d2/:$PWD
     ```
-2. Download Aachen dataset: here, you can pass the path to the root data folder. For e.g, `~/datasets/`.
+2. Download [Aachen dataset](https://www.visuallocalization.net/datasets/): here, you can pass the path to the root data folder. For e.g, `$HOME/datasets/`.
     ```bash
     bash download_aachen.sh -d /path/to/root/data/folder/
     ```
@@ -141,7 +153,7 @@ python relfm/eval/r2d2_on_hpatches.py --quantitative --models R2D2 "SO(2)" "C_{4
     sbatch jobscripts/r2d2_training.job
     ```
     You can check the progress of your job via the slurm output file. You check job status via `squeue | grep $USER`.
-    Note that this is only a sample run and will save a model at `/home/$USER/models/r2d2-sample/model.pt`. More customized runs coming soon!
+    Note that this is only a sample run and will save a model at `/home/$USER/models/r2d2-sample/model.pt`. 
 
 
 
