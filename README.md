@@ -59,7 +59,11 @@ We provide checkpoints to models trained on the Aachen dataset following R2D2. T
 Note that the equivariant models are selected based on early stopping and in general, they converge faster than the non-equivariant models.
 
 The performance across varying rotations is shown in the Figure below.
-![](./Figures/final_mma_hpatches.png)
+<!-- ![](./Figures/final_mma_hpatches.png) -->
+<p align="center">
+  <img width="700" src="./Figures/final_mma_hpatches.png">
+</p>
+
 
 ## Evaluation
 
@@ -143,7 +147,7 @@ A sample qualitative result is shown in the Figure below.
  -->
  <!-- <img src="./Figures/qual_results_rotation_i_castle_90.png" width="480"> -->
 <p align="center">
-  <img width="500" src="./Figures/qual_results_rotation_i_castle_90.png">
+  <img width="700" src="./Figures/qual_results_rotation_i_castle_90.png">
 </p>
 
 
