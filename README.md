@@ -99,7 +99,7 @@ First, run inference for R2D2 model.
 sbatch jobscripts/inference_r2d2_on_hpatches.job 
 ```
 This will run inference, generate outputs and save them to the folder:
-`~/outputs/rotation-equivariant-lfm/hpatches/r2d2_WASF_N16`. Depending on your checkpoint name, it will create a new folder for a new checkpoint.
+`$HOME/outputs/rotation-equivariant-lfm/hpatches/r2d2_WASF_N16`. Depending on your checkpoint name, it will create a new folder for a new checkpoint.
 
 The output shall have 1 folder per image sequence in HPatches, for e.g., `v_home`. Each folder shall contain the following files:
 
@@ -112,6 +112,7 @@ SO(2) model, change the `ckpt` variable in `jobscripts/inference_r2d2_on_hpatche
 ```bash
 sbatch jobscripts/inference_r2d2_on_hpatches.job 
 ```
+This should generate outputs in `$HOME/outputs/rotation-equivariant-lfm/hpatches/finalmodelSO2_epoch_17_4x16_1x32_1x64_2x128`.
 
 This step takes about 20-25 mins per model.
 
@@ -172,7 +173,7 @@ You need to pass the data director, base output folder and the model checkpoint 
     --num_keypoints 1000 
 ```
 This will run inference, generate outputs and save them to the folder:
-`~/outputs/rotation-equivariant-lfm/hpatches/r2d2_WASF_N16`. Depending on your checkpoint name, it will create a new folder for a new checkpoint.
+`$HOME/outputs/rotation-equivariant-lfm/hpatches/r2d2_WASF_N16`. Depending on your checkpoint name, it will create a new folder for a new checkpoint.
 
 The output shall have 1 folder per image sequence in HPatches, for e.g., `v_home`. Each folder shall contain the following files:
 
