@@ -6,8 +6,11 @@ Rotation equivariance meets local feature matching.
 ## Installation
 
 First, clone the repo:
-```bash
+<!-- ```bash
 git clone git@github.com:bpiyush/rotation-equivariant-lfm.git
+``` -->
+```bash
+git clone https://github.com/bpiyush/rotation-equivariant-lfm.git
 ```
 
 <!-- Next, follow steps in [here](./setup/README.md) to install the packages in a `conda` environment. -->
