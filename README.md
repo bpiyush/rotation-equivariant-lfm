@@ -1,6 +1,8 @@
 # C-3PO: Towards Rotation Equivariant Feature Detection and Description
 Rotation equivariance meets local feature matching.
 
+![](./Figures/C-3PO-architecture-1.png)
+
 ## Installation
 
 First, clone the repo:
