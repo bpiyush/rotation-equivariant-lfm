@@ -54,7 +54,7 @@ The performance across varying rotations is shown in the Figure below.
 
 ## Evaluation
 
-In order to evaluate our pre-trained models on the [HPatches dataset](https://github.com/hpatches/hpatches-dataset), please follow these steps. For compactness, we provide steps for R2D2 and our SO(2) model. But the steps apply more generally.
+In order to evaluate our pre-trained models on the [HPatches dataset](https://github.com/hpatches/hpatches-dataset), please follow these steps. For compactness, we provide steps for R2D2 and our SO(2) model. But the steps apply more generally. Note that since checkpoints are small, we provide them within the repo.
 
 ### 1. Download and setup the dataset
 Download the dataset by:
