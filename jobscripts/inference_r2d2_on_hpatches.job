@@ -18,11 +18,11 @@ source deactivate
 source activate relfm-v1.0
 
 # set default value of ckpt
-# ckpt=trained_models/r2d2_WASF_N16.pt
+ckpt=trained_models/r2d2_WASF_N16.pt
 # ckpt=trained_models/finalmodelC3_epoch_2_4x16_1x32_1x64_2x128.pt
 # ckpt=trained_models/finalmodelC4_epoch_5_4x16_1x32_1x64_2x128.pt
 # ckpt=trained_models/finalmodelC8_epoch_1_4x16_1x32_1x64_2x128.pt
-ckpt=trained_models/finalmodelSO2_epoch_17_4x16_1x32_1x64_2x128.pt
+# ckpt=trained_models/finalmodelSO2_epoch_17_4x16_1x32_1x64_2x128.pt
 
 # set default value of data_dir
 data_dir=$PWD/data/hpatches-sequences-release/

@@ -85,16 +85,21 @@ In [5]: img.show()
 
 ### 2. Run inference for each model
 
-In this step, the model is ran on each sample in the dataset and the predictions are stored.
+In this step, the model is ran on each sample in the dataset and the predictions are stored. We recommend running this step in Lisa since it takes a while.
+
 
 First, run inference for R2D2 model.
 ```bash
-python relfm/inference/r2d2_on_hpatches.py
+sbatch jobscripts/inference_r2d2_on_hpatches.job 
 ```
 
-Then, run inference for SO(2) model.
+Note that in the jobscript, we have set the default checkpoint path to the R2D2 checkpoint. To run inference for 
+SO(2) model, change the `ckpt` variable in `jobscripts/inference_r2d2_on_hpatches.job` to `ckpt=trained_models/finalmodelSO2_epoch_17_4x16_1x32_1x64_2x128.pt`. Then, run
 ```bash
+sbatch jobscripts/inference_r2d2_on_hpatches.job 
 ```
+
+This step takes about 20-25 mins per model.
 
 ### 3. Run evaluation to generate results
 
