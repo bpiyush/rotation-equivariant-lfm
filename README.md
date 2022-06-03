@@ -27,6 +27,13 @@ module load 2021
 module load Anaconda3/2021.05
 conda activate relfm-v1.0
 ```
+Further, before running any code, please set the `PYTHONPATH` as follows:
+```bash
+# navigate to the directory where the code is located
+cd /path/to/repo/
+export PYTHONPATH=$PWD:$PWD/lib/r2d2/
+```
+
 
 ## Pretrained models
 
@@ -41,6 +48,65 @@ We provide checkpoints to models trained on the Aachen dataset following R2D2. T
 | SO2 | Continuous group SO2 model from C-3PO family |  [finalmodelSO2_epoch_17_4x16_1x32_1x64_2x128.pt](trained_models/finalmodelSO2_epoch_17_4x16_1x32_1x64_2x128.pt) |
 
 Note that the equivariant models are selected based on early stopping and in general, they converge faster than the non-equivariant models.
+
+The performance across varying rotations is shown in the Figure below.
+![](./Figures/final_mma_hpatches.png)
+
+## Evaluation
+
+In order to evaluate our pre-trained models on the [HPatches dataset](https://github.com/hpatches/hpatches-dataset), please follow these steps. For compactness, we provide steps for R2D2 and our SO(2) model. But the steps apply more generally.
+
+### 1. Download and setup the dataset
+Download the dataset by:
+```bash
+mkdir -p $HOME/datasets/
+cd $HOME/datasets/
+wget http://icvl.ee.ic.ac.uk/vbalnt/hpatches/hpatches-sequences-release.tar.gz
+tar -xvf hpatches-sequences-release.tar.gz
+rm -rf hpatches-sequences-release.tar.gz
+```
+This shall create a folder `hpatches-sequences-release` in `$HOME/datasets/`.
+
+You can check out sample images from the dataset.
+```bash
+(relfm-v1.0) $ ipython
+```
+```python
+In [1]: %matplotlib inline
+In [2]: from PIL import Image
+In [3]: path = "~/datasets/hpatches-sequences-release/v_yard/1.ppm"
+In [4]: img = Image.open(path)
+In [5]: img.show()
+```
+
+### 2. Run inference for each model
+
+In this step, the model is ran on each sample in the dataset and the predictions are stored.
+
+First, run inference for R2D2 model.
+```bash
+python relfm/inference/r2d2_on_hpatches.py
+```
+
+Then, run inference for SO(2) model.
+```bash
+```
+
+### 3. Run evaluation to generate results
+
+In this step, we use the predictions from the previous step to generate the results.
+
+```bash
+python relfm/eval/r2d2_on_hpatches.py --quantitative --models R2D2 "SO(2)"
+```
+
+In case you want to include the C4 variant, you can run the following command.
+```bash
+python relfm/eval/r2d2_on_hpatches.py --quantitative --models R2D2 "SO(2)" "C_{4}"
+```
+
+> Note: Our evaluation is partly based on the [notebook](https://github.com/mihaidusmanu/d2-net/blob/master/hpatches_sequences/HPatches-Sequences-Matching-Benchmark.ipynb) provided by [D2-Net](https://github.com/mihaidusmanu/d2-net). 
+
 
 ## Getting started
 

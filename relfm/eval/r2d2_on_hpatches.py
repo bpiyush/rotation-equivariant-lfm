@@ -1,21 +1,35 @@
-"""Runs evaluation on saved predictions of R2D2-like models on HPatches."""
+"""
+Runs evaluation on saved predictions of given R2D2-like models on HPatches.
+"""
 import os
 from os.path import join, exists, expanduser
 from genericpath import isdir
 from glob import glob
+from collections import defaultdict
 import numpy as np
 from PIL import Image
-from collections import defaultdict
 import matplotlib.pyplot as plt
 import torch
+import time
 
 from lib.r2d2.extract import extract_keypoints_modified
 from relfm.utils.paths import REPO_PATH
 from relfm.utils.log import print_update, tqdm_iterator
-from relfm.utils.visualize import show_images_with_keypoints, check_kps_with_homography, set_latex_fonts, get_colors, get_concat_h
-from relfm.utils.matching import evaluate_matching_with_rotation, analyze_result
+from relfm.utils.visualize import (
+    show_images_with_keypoints,
+    check_kps_with_homography,
+    set_latex_fonts,
+    get_colors,
+    get_concat_h,
+)
+from relfm.utils.matching import (
+    evaluate_matching_with_rotation,
+    analyze_result,
+)
 from relfm.utils.geometry import (
-    append_rotation_to_homography, apply_homography_to_keypoints, resize, apply_clean_rotation,
+    append_rotation_to_homography,
+    apply_homography_to_keypoints,
+    resize, apply_clean_rotation,
 )
 from relfm.inference.r2d2_on_hpatches import configure_save_dir
 
@@ -28,8 +42,10 @@ def plot_qualitative_results(
         sequence_name,
         rotation,
         save_path=None,
-        save=False,
+        save=True,
+        show=False,
     ):
+    """Plots qualitative results of matching for a particular sequence at a given rotation."""
     fig, axes = plt.subplots(len(model_ckpt_paths), 1, figsize=(20, 14))
 
     for i, model_name in enumerate(list(model_ckpt_paths.keys())):
@@ -45,11 +61,18 @@ def plot_qualitative_results(
         ax.set_title(title, fontsize=20)
         
     fig.tight_layout()
-    plt.savefig(f"./Figures/qual_results_rotation_{sequence_name}_{rotation}.pdf", bbox_inches="tight")
-    plt.show()
+    if save:
+        save_dir = "./Figures/"
+        os.makedirs(save_dir, exist_ok=True)
+        save_path = join(save_dir, f"qual_results_rotation_{sequence_name}_{rotation}.pdf")
+        plt.savefig(save_path, bbox_inches="tight")
+        print("Saved qualitative results to {}".format(save_path))
+
+    if show:
+        plt.show()
 
 
-def plot_quantitative_results(results, ransac):
+def plot_quantitative_results(results, ransac, save=True, show=False):
     fig, ax = plt.subplots(1, 1, figsize=(14, 8))
 
     ax.grid(alpha=0.5)
@@ -72,6 +95,21 @@ def plot_quantitative_results(results, ransac):
         markers = ["o", "D", "X", "s"]
         linestyles = ["solid", "dashed", "dashed", "solid"]
         fillstyles = ["full", "none", "none", "full"]
+    elif len(results) == 3:
+        colors = ["blue", "green", "red"]
+        markers = ["o", "X", "s"]
+        linestyles = ["solid", "dashed", "solid"]
+        fillstyles = ["full", "none", "full"]
+    elif len(results) == 2:
+        colors = ["blue", "red"]
+        markers = ["o", "s"]
+        linestyles = ["solid", "solid"]
+        fillstyles = ["full", "full"]
+    elif len(results) == 1:
+        colors = ["blue"]
+        markers = ["o"]
+        linestyles = ["solid"]
+        fillstyles = ["full"]
     else:
         raise NotImplementedError(f"Define colors and markers for {len(results)} number of models")
 
@@ -93,37 +131,103 @@ def plot_quantitative_results(results, ransac):
         ax.set_xticks(list(mma_avg.keys()))
 
     ax.legend(fontsize=17, bbox_to_anchor=(1., 0.95), title="Method", title_fontsize=18)
-    fig_dir = "./Figures"
-    os.makedirs(fig_dir, exist_ok=True)
-    plt.savefig(join(fig_dir, "final_mma_hpatches_v3.0.pdf"), bbox_inches='tight')
+
+    if save:
+        fig_dir = "./Figures"
+        os.makedirs(fig_dir, exist_ok=True)
+        plt.savefig(join(fig_dir, "final_mma_hpatches.pdf"), bbox_inches='tight')
+        print("Saved quantitative results to ./Figures/final_mma_hpatches.pdf")
+
+    if show:
+        plt.show()
 
 
 if __name__ == "__main__":
+
+    import argparse
+    parser = argparse.ArgumentParser(
+        description="Evaluate R2D2-like models on HPatches dataset",
+    )
+    parser.add_argument(
+        '-m','--models',
+        nargs='+',
+        default=["R2D2", "SO(2)"],
+        help='Models to evaluate on.',
+    )
+    parser.add_argument(
+        "--quantitative",
+        action="store_true",
+        help="Plot quantitative results",
+    )
+    parser.add_argument(
+        "--qualitative",
+        action="store_true",
+        help="Plot qualitative results",
+    )
+    parser.add_argument(
+        "--rotation_to_visualize",
+        default=0,
+        help="Rotation to visualize qualitative results",
+    )
+    parser.add_argument(
+        "--target_index_to_visualize",
+        default=2,
+        help="Index of the target image in the sequence to plot qualitative results",
+    )
+    parser.add_argument(
+        "--sequence_to_visualize",
+        default="i_castle",
+        help="Sequence to visualize qualitative results",
+    )
+    args = parser.parse_args()
+
+    assert args.quantitative or args.qualitative, \
+        "Please specify at least one of --quantitative or --qualitative"
+
     set_latex_fonts(show_sample=False)
 
     # configure inputs
     data_dir = join(REPO_PATH, "data/hpatches-sequences-release/")
 
+    # list of all models
     model_ckpt_paths = {
-        # "R2D2": join(REPO_PATH, "checkpoints/r2d2_WASF_N16.pt"),
-        # "R2D2 - $C_{4}$": join(REPO_PATH, "trained_models/epoch_16_test_model.pt"),
-        # "R2D2 - $SO_{2}$ (Ep 4)": join(REPO_PATH, "trained_models/epoch_3_SO2_4x16_1x32_1x64_2x128.pt"),
-        # "R2D2 - $C_{8}$ (Ep 4)": join(REPO_PATH, "trained_models/epoch_3_C8_4x16_1x32_1x64_2x128.pt"),
-        # "R2D2 - $SO_{2}$ (Ep 18)": join(REPO_PATH, "trained_models/epoch_17_SO2_4x16_1x32_1x64_2x128.pt"),
-        # UPDATED MODELS
         "R2D2": join(REPO_PATH, "trained_models/r2d2_WASF_N16.pt"),
-        # "C-3PO - $C_{3}$": join(REPO_PATH, "trained_models/finalmodelC3_epoch_2_4x16_1x32_1x64_2x128.pt"),
-        "C-3PO - $C_{4}$": join(REPO_PATH, "trained_models/finalmodelC4_epoch_5_4x16_1x32_1x64_2x128.pt"),
-        "C-3PO - $C_{8}$": join(REPO_PATH, "trained_models/finalmodelC8_epoch_1_4x16_1x32_1x64_2x128.pt"),
-        "C-3PO - $SO(2)$": join(REPO_PATH, "trained_models/finalmodelSO2_epoch_17_4x16_1x32_1x64_2x128.pt"),
+        "C-3PO - $C_{4}$": join(
+            REPO_PATH,
+            "trained_models/finalmodelC4_epoch_5_4x16_1x32_1x64_2x128.pt",
+        ),
+        "C-3PO - $C_{8}$": join(
+            REPO_PATH,
+            "trained_models/finalmodelC8_epoch_1_4x16_1x32_1x64_2x128.pt",
+        ),
+        "C-3PO - $SO(2)$": join(
+            REPO_PATH,
+            "trained_models/finalmodelSO2_epoch_17_4x16_1x32_1x64_2x128.pt",
+        ),
     }
+    # filter models that you want to evaluate on
+    keys_to_retain = []
+    for model_name in args.models:
+        for key in model_ckpt_paths.keys():
+            if model_name in key:
+                keys_to_retain.append(key)
+    model_ckpt_paths = {
+        k: v for k, v in model_ckpt_paths.items() if k in keys_to_retain
+    }
+    print()
+    print(">>>>>>>>> Evaluating models:", args.models)
+    print()
+    time.sleep(3)
 
     output_dir = join(expanduser("~"), "outputs/rotation-equivariant-lfm")
 
-    assert isdir(data_dir)
-    assert isdir(output_dir)
-    # assert exists(model_ckpt_path)
+    assert isdir(data_dir), "Data does not exist at {}.".format(data_dir)
+    assert isdir(output_dir), "Output directory does not exist."\
+        "Are you sure you have run inference script before running this script?"
 
+    #####
+    # DO NOT CHANGE THESE ARGUMENTS SINCE THEY ARE SAME AS
+    # IN THE INFERENCE SCRIPT THAT GENERATES PREDICTIONS
     gap_between_rotations=15
     downsize=True
     imsize=300
@@ -136,6 +240,7 @@ if __name__ == "__main__":
 
     sanity_check = False
     crop_post_rotation = False
+    #####
 
     results = dict()
 
@@ -151,15 +256,16 @@ if __name__ == "__main__":
     # set this to true to see intermediate outputs/messages
     verbose = False
 
-    qualitative_analysis = False
+    qualitative_analysis = args.qualitative
     if qualitative_analysis:
         print(":::: NOTE: Only performing qualitative analysis, not quantitative analysis.")
         ignore_cache = True
         overwrite_cache = False
-    rotation_to_visualize = 90
-    img2_index_to_visualize = 2
-    # sequence_name_to_visualize = "i_castle"
-    sequence_name_to_visualize = "i_whitebuilding"
+
+    rotation_to_visualize = args.rotation_to_visualize
+    img2_index_to_visualize = args.target_index_to_visualize
+    sequence_name_to_visualize = args.sequence_to_visualize
+    assert sequence_name_to_visualize in os.listdir(data_dir)
 
     source_images_with_kps = dict()
     target_images_with_kps = dict()
@@ -367,5 +473,4 @@ if __name__ == "__main__":
     else:
         print("Finishing quantitative analysis")
         # plot results
-        import ipdb; ipdb.set_trace()
         plot_quantitative_results(results=results, ransac=ransac)
