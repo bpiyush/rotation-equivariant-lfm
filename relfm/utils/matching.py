@@ -185,7 +185,7 @@ def evaluate_matching_with_rotation(
     return result
 
 
-def analyze_result(img1: Image.Image, img2: Image.Image, result, match_thickness: int = 1, K=100, radius=1, model_name="", save=False, save_dir="./",):
+def analyze_result(img1: Image.Image, img2: Image.Image, result, match_thickness: int = 1, K=100, radius=1, model_name="", save=False, save_dir="./", return_img=False):
     """Visualizes matching result for given pair of images."""
 
     K = min(K, result["matches"].shape[0])
@@ -234,3 +234,6 @@ def analyze_result(img1: Image.Image, img2: Image.Image, result, match_thickness
     show_single_image(
         img, title=title, figsize=(13, 9), save=save, save_path=save_path,
     )
+
+    if return_img:
+        return img
