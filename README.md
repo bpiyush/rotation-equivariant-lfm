@@ -86,11 +86,15 @@ rm -rf hpatches-sequences-release.tar.gz
 ```
 This shall create a folder `hpatches-sequences-release` in `$HOME/datasets/`.
 Then, symlink it as a folder within the repo.
+(Don't forget to set the path to repo correctly)
 ```bash
-ln -s $HOME/datasets $HOME/repos/relfm/data
+ln -s $HOME/datasets /path/to/repo/data
 ```
 
 You can check out sample images from the dataset.
+```bash
+pip install ipython
+```
 ```bash
 (relfm-v1.0) $ ipython
 ```
@@ -99,7 +103,7 @@ In [1]: %matplotlib inline
 In [2]: from PIL import Image
 In [3]: path = "~/datasets/hpatches-sequences-release/v_yard/1.ppm"
 In [4]: img = Image.open(path)
-In [5]: img.show()
+In [5]: img.show() # this may not open on Lisa since it is not a GUI terminal
 ```
 
 ### 2. Run inference for each model
