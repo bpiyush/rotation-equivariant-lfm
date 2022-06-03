@@ -22,11 +22,6 @@ sbatch jobscripts/create_gpu_env.sh
 ```
 > Note: This has only been tested on the Lisa cluster. If you want to run the code on a CPU, please follow the instructions [here](./setup/README.md). Although, we recommend using the GPU version.
 
-You can check if the packages are installed correctly by running:
-```bash
-python setup/check_packages.py
-```
-
 <!-- 
 ## Datasets
 
@@ -41,6 +36,12 @@ module load 2021
 module load Anaconda3/2021.05
 conda activate relfm-v1.0
 ```
+
+You can check if the packages are installed correctly by running:
+```bash
+python setup/check_packages.py
+```
+
 Further, before running any code, please set the `PYTHONPATH` as follows:
 ```bash
 # navigate to the directory where the code is located
