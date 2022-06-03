@@ -138,6 +138,16 @@ python relfm/eval/r2d2_on_hpatches.py --qualitative --models R2D2 "SO(2)" --sequ
 ```
 This will generate a figure at `./Figures/qual_results_rotation_i_castle_90.pdf`.
 
+A sample qualitative result is shown in the Figure below.
+<!-- ![](./Figures/qual_results_rotation_i_castle_90.png)
+ -->
+ <!-- <img src="./Figures/qual_results_rotation_i_castle_90.png" width="480"> -->
+<p align="center">
+  <img width="500" src="./Figures/qual_results_rotation_i_castle_90.png">
+</p>
+
+
+
 
 > Note: Our evaluation is partly based on the [notebook](https://github.com/mihaidusmanu/d2-net/blob/master/hpatches_sequences/HPatches-Sequences-Matching-Benchmark.ipynb) provided by [D2-Net](https://github.com/mihaidusmanu/d2-net). 
 
