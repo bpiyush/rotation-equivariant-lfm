@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 import cv2
 from PIL import Image
 
+from relfm.utils.geometry import apply_homography_to_keypoints
+
 
 # define predominanat colors
 COLORS = {
@@ -17,26 +19,30 @@ COLORS = {
 }
 
 
-def show_single_image(image: np.ndarray, figsize: tuple = (8, 8), title: str = None, cmap: str = None, ticks=False):
+def show_single_image(image: np.ndarray, figsize: tuple = (8, 8), title: str = None, titlesize=18, cmap: str = None, ticks=False, save=False, save_path=None):
     """Show a single image."""
     fig, ax = plt.subplots(1, 1, figsize=figsize)
 
     if isinstance(image, Image.Image):
         image = np.asarray(image)
 
-    ax.set_title(title)
+    ax.set_title(title, fontsize=titlesize)
     ax.imshow(image, cmap=cmap)
     
     if not ticks:
         ax.set_xticks([])
         ax.set_yticks([])
 
+    if save:
+        plt.savefig(save_path, bbox_inches='tight')
+    
     plt.show()
 
 
 def show_grid_of_images(
         images: np.ndarray, n_cols: int = 4, figsize: tuple = (8, 8),
-        cmap=None, subtitles=None, title=None,
+        cmap=None, subtitles=None, title=None, subtitlesize=18,
+        save=False, save_path=None,
     ):
     """Show a grid of images."""
     n_cols = min(n_cols, len(images))
@@ -57,10 +63,16 @@ def show_grid_of_images(
             if len(images[i].shape) == 2:
                 cmap="gray"
             ax.imshow(images[i], cmap=cmap)
-            ax.set_title(subtitles[i])
+            ax.set_title(subtitles[i], fontsize=subtitlesize)
             ax.axis('off')
+    fig.set_tight_layout(True)
     plt.suptitle(title, y=0.8)
-    plt.show()
+
+    if save:
+        plt.savefig(save_path, bbox_inches='tight')
+        plt.close()
+    else:
+        plt.show()
 
 
 def show_keypoint_matches(
@@ -130,7 +142,7 @@ def get_concat_v(im1, im2):
     return dst
 
 
-def show_images_with_keypoints(images: list, kps: list, radius=15, color=(0, 220, 220), figsize=(10, 8)):
+def show_images_with_keypoints(images: list, kps: list, radius=15, color=(0, 220, 220), figsize=(10, 8), return_images=False, save=False, save_path="sample.png"):
     assert len(images) == len(kps)
 
     # generate
@@ -140,7 +152,10 @@ def show_images_with_keypoints(images: list, kps: list, radius=15, color=(0, 220
         images_with_kps.append(img_with_kps)
     
     # show
-    show_grid_of_images(images_with_kps, n_cols=len(images), figsize=figsize)
+    show_grid_of_images(images_with_kps, n_cols=len(images), figsize=figsize, save=save, save_path=save_path)
+    
+    if return_images:
+        return images_with_kps
 
 
 def set_latex_fonts(usetex=True, fontsize=14, show_sample=False, **kwargs):
@@ -161,3 +176,46 @@ def set_latex_fonts(usetex=True, fontsize=14, show_sample=False, **kwargs):
     except:
         print("Failed to setup LaTeX fonts. Proceeding without.")
         pass
+
+
+def get_colors(num_colors, palette="jet"):
+    cmap = plt.get_cmap(palette)
+    colors = [cmap(i) for i in np.linspace(0, 1, num_colors)]
+    return colors
+
+
+def check_kps_with_homography(
+        img1, img2, H, kps=None,
+        num_kps=10, sample="random", save=False, save_path="sample.pdf", **draw_args,
+    ):
+    """Checks if H correctly transforms keypoints kps from img1 to img2."""
+    if kps is None:
+        width, height = img1.size
+        assert sample in ["random", "uniform"]
+        
+        if sample == "random":
+            np.random.seed(0)
+            kps = np.vstack(
+                [np.random.randint(0, width, num_kps), np.random.randint(0, height, num_kps)]
+            ).T
+        elif sample == "uniform":
+            x = np.linspace(0, width, num_kps)
+            y = np.linspace(0, height, num_kps)
+            X, Y = np.meshgrid(x, y)
+
+            kps = []
+            for i in range(num_kps):
+                for j in range(num_kps):
+                    kps.append([X[i, j], Y[i, j]])
+            kps = np.array(kps)
+    
+    img1_with_kps = draw_kps_on_image(img1, kps, **draw_args)
+    
+    kps_transformed = apply_homography_to_keypoints(kps, H)
+    img2_with_kps = draw_kps_on_image(img2, kps_transformed, **draw_args)
+
+    show_grid_of_images(
+        images=[img1_with_kps, img2_with_kps],
+        subtitles=["Source", "Target (Transformation: $H$)"],
+        save=save, save_path=save_path,
+    )
