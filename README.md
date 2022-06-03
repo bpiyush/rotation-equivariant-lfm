@@ -139,7 +139,7 @@ This will generate a figure at `./Figures/qual_results_rotation_i_castle_90.pdf`
 > Note: Our evaluation is partly based on the [notebook](https://github.com/mihaidusmanu/d2-net/blob/master/hpatches_sequences/HPatches-Sequences-Matching-Benchmark.ipynb) provided by [D2-Net](https://github.com/mihaidusmanu/d2-net). 
 
 
-## Training models from scratch
+## Training
 
 1. Activate the environment:
     ```bash
@@ -164,8 +164,11 @@ This will generate a figure at `./Figures/qual_results_rotation_i_castle_90.pdf`
     Note that this is only a sample run and will save a model at `/home/$USER/models/r2d2-sample/model.pt`. 
 
 
+## Acknoledgements
 
-## Evaluation pipeline
+We thank the authors of [R2D2](https://github.com/naver/r2d2), [D2-Net](https://dsmn.ml/publications/d2-net.html) papers for making their code publicly available. We thank our TA, [Miltos Kofinas](https://www.uva.nl/en/profile/k/o/m.kofinas/m.kofinas.html), for his guidance and the teaching staff for DL2.
+
+<!-- ## Evaluation pipeline
 
 To evaluate an R2D2-like model, we use the following evaluation steps:
 
@@ -204,4 +207,4 @@ Tips:
     ```
 
 ### Evaluate predictions
-Use the generated predictions to evaluation robustness of feature matching to rotations. You can do this by running [this notebook](./notebooks/eval_on_hpatches.ipynb).
+Use the generated predictions to evaluation robustness of feature matching to rotations. You can do this by running [this notebook](./notebooks/eval_on_hpatches.ipynb). -->
