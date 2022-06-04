@@ -136,9 +136,11 @@ In [9]: quit()
 
 In this step, the model is ran on each sample in the dataset and the predictions are stored. We recommend running this step in Lisa since it takes a while.
 
+**Inference for R2D2 baseline**
 
 First, run inference for R2D2 model.
 ```bash
+export PYTHONPATH=$PWD:$PWD/lib/r2d2/
 sbatch jobscripts/inference_r2d2_on_hpatches.job 
 ```
 This will run inference, generate outputs and save them to the folder:
@@ -149,6 +151,9 @@ The output shall have 1 folder per image sequence in HPatches, for e.g., `v_home
 * `1_rotation_R.npy`: the predicted keypoint locations and descriptor vectors for the source image.
 * `t_rotation_R.npy`: the predicted keypoint locations and descriptor vectors for the target image with index `t` and rotation `R`, $\forall t \in \{2, 3, 4, 5, 6\}, R \in \{0, 15, 30, .., 345, 360\}$.
 
+:hourglass: This step takes about 5 minutes.
+
+**Inference for our C-3PO (SO(2)) model**
 
 Note that in the jobscript, we have set the default checkpoint path to the R2D2 checkpoint. To run inference for 
 SO(2) model, change the `ckpt` variable in `jobscripts/inference_r2d2_on_hpatches.job` to `ckpt=trained_models/finalmodelSO2_epoch_17_4x16_1x32_1x64_2x128.pt`. Then, run
@@ -157,7 +162,7 @@ sbatch jobscripts/inference_r2d2_on_hpatches.job
 ```
 This should generate outputs in `$HOME/outputs/rotation-equivariant-lfm/hpatches/finalmodelSO2_epoch_17_4x16_1x32_1x64_2x128`.
 
-This step takes about 20-25 mins per model.
+:hourglass: This step takes about 20-25 minutes.
 
 ### 3. Run evaluation to generate results
 
@@ -194,6 +199,8 @@ The first two columns show the detected keypoints and the last two columns show 
 
 ## Training
 
+The training steps are similar to those for evaluation. However, you need to download additional datasets such as [Aachen](https://www.visuallocalization.net/datasets/).
+
 1. Activate the environment:
     ```bash
     # activate the environment
@@ -217,9 +224,20 @@ The first two columns show the detected keypoints and the last two columns show 
     Note that this is only a sample run and will save a model at `/home/$USER/models/r2d2-sample/model.pt`. 
 
 
-## Acknoledgements
+## Acknowledgements
 
 We thank the authors of [R2D2](https://github.com/naver/r2d2), [D2-Net](https://dsmn.ml/publications/d2-net.html) papers for making their code publicly available. We thank our TA, [Miltos Kofinas](https://www.uva.nl/en/profile/k/o/m.kofinas/m.kofinas.html), for his guidance and the teaching staff for DL2.
+
+
+## Maintained by
+
+* [Piyush Bagad](https://bpiyush.github.io/)
+* [Danilo de Goede](#)
+* [Paul Hilders](#)
+* [Floor Ejkelboom](#)
+* [Mark Fokkema](#)
+
+:bell: In case you face any issues or have suggestions, kindly create a github issue and we will try to respond as early as possible.
 
 <!-- ## Evaluation pipeline
 

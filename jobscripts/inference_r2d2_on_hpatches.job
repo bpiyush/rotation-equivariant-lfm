@@ -32,7 +32,7 @@ echo "----------------------------------------"
 echo "Running inference on hpatches dataset"
 echo "Checkpoint: $ckpt"
 echo "Data directory: $data_dir"
-echo "----------------------------------------"
+
 
 # Run your code
 # WARNING: This needs to be run from the root of the repo
@@ -42,6 +42,10 @@ model_ckpt_path=$PWD/$ckpt
 
 # set output path
 output_dir=$HOME/outputs/rotation-equivariant-lfm
+mkdir -p $output_dir
+
+echo "Output directory: $output_dir"
+echo "----------------------------------------"
 
 python relfm/inference/r2d2_on_hpatches.py \
     --data_dir $data_dir \
