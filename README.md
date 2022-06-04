@@ -169,6 +169,13 @@ This should generate outputs in `$HOME/outputs/rotation-equivariant-lfm/hpatches
 In this step, we use the predictions from the previous step to generate the results.
 
 ```bash
+module purge
+module load 2021
+module load Anaconda3/2021.05
+
+conda activate relfm-v1.0
+export PYTHONPATH=$PWD:$PWD/lib/r2d2/
+
 python relfm/eval/r2d2_on_hpatches.py --quantitative --models R2D2 "SO(2)"
 ```
 
