@@ -39,10 +39,17 @@ module load Anaconda3/2021.05
 conda activate relfm-v1.0
 ```
 
-You can check if the packages are installed correctly by running:
+You can check if the packages are installed correctly by running (on the login node):
 ```bash
 python setup/check_packages.py
 ```
+
+To check it on a cluster GPU, run:
+```bash
+sbatch jobscripts/check_packages.sh
+```
+:hourglass: This step takes < 1 min.
+
 
 Further, before running any code, please set the `PYTHONPATH` as follows:
 ```bash
