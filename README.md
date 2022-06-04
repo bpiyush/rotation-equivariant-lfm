@@ -245,7 +245,7 @@ We thank the authors of [R2D2](https://github.com/naver/r2d2), [D2-Net](https://
 * [Piyush Bagad](https://bpiyush.github.io/)
 * [Danilo de Goede](#)
 * [Paul Hilders](#)
-* [Floor Ejkelboom](#)
+* [Floor Eijkelboom](#)
 * [Mark Fokkema](#)
 
 :bell: In case you face any issues or have suggestions, kindly create a github issue and we will try to respond as early as possible.
