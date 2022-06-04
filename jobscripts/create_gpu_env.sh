@@ -16,7 +16,11 @@ module load Anaconda3/2021.05
 # Create an environment named "relfm-v1.0"
 echo "Creating an environment named 'relfm-v1.0'..."
 echo "----------------------------------------"
-cd $HOME/rotation-equivariant-lfm/
+# get path to the repository
+repository_path=$(git rev-parse --show-toplevel)
+echo "repository_path: $repository_path"
+# cd $HOME/rotation-equivariant-lfm/
+cd $repository_path
 conda env create -f relfm-v1.0.yml
 # conda create -y -n relfm-v1.0 python=3.9
 # source activate relfm-v1.0
