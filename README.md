@@ -20,6 +20,8 @@ Next, follow the steps to create a `conda` environment.
 ```bash
 sbatch jobscripts/create_gpu_env.sh
 ```
+:hourglass: This step takes about 10 minutes.
+
 > Note: This has only been tested on the Lisa cluster. If you want to run the code on a CPU, please follow the instructions [here](./setup/README.md). Although, we recommend using the GPU version.
 
 <!-- 
