@@ -181,6 +181,11 @@ if __name__ == "__main__":
         default="i_castle",
         help="Sequence to visualize qualitative results",
     )
+    parser.add_argument(
+        "--ignore_cache",
+        action="store_true",
+        help="Ignore cached results",
+    )
     args = parser.parse_args()
 
     assert args.quantitative or args.qualitative, \
@@ -234,8 +239,8 @@ if __name__ == "__main__":
     downsize=True
     imsize=300
 
-    ignore_cache = False
-    overwrite_cache = True
+    ignore_cache = args.ignore_cache
+    overwrite_cache = False
 
     ransac = True
     ransac_threshold = 3.

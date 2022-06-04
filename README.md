@@ -162,7 +162,7 @@ sbatch jobscripts/inference_r2d2_on_hpatches.job
 ```
 This should generate outputs in `$HOME/outputs/rotation-equivariant-lfm/hpatches/finalmodelSO2_epoch_17_4x16_1x32_1x64_2x128`.
 
-:hourglass: This step takes about 20-25 minutes.
+:hourglass: This step takes about 2 hours.
 
 ### 3. Run evaluation to generate results
 
