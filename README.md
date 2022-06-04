@@ -97,7 +97,11 @@ This shall create a folder `hpatches-sequences-release` in `$HOME/datasets/`.
 Then, symlink it as a folder within the repo.
 (Don't forget to set the path to repo correctly)
 ```bash
-ln -s $HOME/datasets /path/to/repo/data
+cd /path/to/repo/
+ln -s $HOME/datasets data
+
+# check out the dataset
+ls data/hpatches-sequences-release/
 ```
 
 You can check out sample images from the dataset.
