@@ -18,5 +18,4 @@ source deactivate
 source activate relfm-v1.0
 
 # Run your code
-# python relfm/eval/r2d2_on_hpatches.py
-python relfm/eval/testing_r2d2_on_hpatches.py
+python relfm/eval/r2d2_on_hpatches.py --quantitaive --models R2D2 "SO(2)"

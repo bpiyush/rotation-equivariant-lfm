@@ -178,6 +178,10 @@ export PYTHONPATH=$PWD:$PWD/lib/r2d2/
 
 python relfm/eval/r2d2_on_hpatches.py --quantitative --models R2D2 "SO(2)"
 ```
+:hourglass: This step takes about 1 hour. To speed up the runtime, you can run it as a Slurm process.
+```bash
+sbatch jobscripts/evaluation_r2d2_on_hpatches.job
+```
 
 In case you want to include the C4 variant, you can run the following command.
 ```bash

@@ -301,7 +301,7 @@ if __name__ == "__main__":
             # store sequence name
             sequence_name = os.path.basename(sequence)
 
-            if sequence_name != sequence_name_to_visualize:
+            if sequence_name != sequence_name_to_visualize and qualitative_analysis:
                 continue
 
             # load source image
