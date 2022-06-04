@@ -101,18 +101,31 @@ ln -s $HOME/datasets /path/to/repo/data
 ```
 
 You can check out sample images from the dataset.
+
+Activate the environment.
 ```bash
+module purge
+module load 2021
+module load Anaconda3/2021.05
+conda activate relfm-v1.0
+# incase it is not already installed
 pip install ipython
 ```
+
+Look at a sample.
 ```bash
 (relfm-v1.0) $ ipython
 ```
 ```python
 In [1]: %matplotlib inline
 In [2]: from PIL import Image
-In [3]: path = "~/datasets/hpatches-sequences-release/v_yard/1.ppm"
-In [4]: img = Image.open(path)
-In [5]: img.show() # this may not open on Lisa since it is not a GUI terminal
+In [3]: from os.path import expanduser, join
+In [4]: path = join(expanduser("~"), "datasets/hpatches-sequences-release/v_yard/1.ppm")
+In [5]: assert exists(path), f"File does not exist at {path}. Are you sure the dataset is downloaded correctly?"
+In [6]: img = Image.open(path)
+In [7]: img.show() # this may not open on Lisa since it is not a GUI terminal
+In [8]: img.save("hpatches_sample.png") # you can save and then visualize it in VS Code
+In [9]: quit()
 ```
 
 ### 2. Run inference for each model
