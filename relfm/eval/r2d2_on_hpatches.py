@@ -80,7 +80,7 @@ def plot_quantitative_results(results, ransac, save=True, show=False):
 
     ransac_suffix = " (RANSAC)" if ransac else ""
     ax.set_title(f"Rotation-equivariance on HPatches dataset {ransac_suffix}", fontsize=20)
-    ax.set_xlabel("Rotation angle ", fontsize=17)
+    ax.set_xlabel("Rotation angle (degrees)", fontsize=17)
     ax.set_ylabel("Mean matching accuracy (MMA)", fontsize=17)
 
     i = 0
