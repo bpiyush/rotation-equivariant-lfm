@@ -27,6 +27,6 @@ if __name__ == "__main__":
     ax.set_xticks(ax.get_xticks(), minor=True)
     ax.set_xlabel("Number of trainable parameters", fontsize=17)
     ax.set_ylabel("Avg inference time per image (s)", fontsize=17)
-    ax.set_title("Model Efficiency", fontsize=18)
+    # ax.set_title("Model Efficiency", fontsize=18)
 
-    plt.savefig("./Figures/model_efficiency.pdf", bbox_inches="tight")
+    plt.savefig("./Figures/model_efficiency_v2.pdf", bbox_inches="tight")
