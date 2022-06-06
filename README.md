@@ -149,7 +149,7 @@ This will run inference, generate outputs and save them to the folder:
 The output shall have 1 folder per image sequence in HPatches, for e.g., `v_home`. Each folder shall contain the following files:
 
 * `1_rotation_R.npy`: the predicted keypoint locations and descriptor vectors for the source image.
-* `t_rotation_R.npy`: the predicted keypoint locations and descriptor vectors for the target image with index `t` and rotation `R`, $\forall t \in \{2, 3, 4, 5, 6\}, R \in \{0, 15, 30, .., 345, 360\}$.
+* `t_rotation_R.npy`: the predicted keypoint locations and descriptor vectors for the target image with index `t` and rotation `R`, $\forall t \in \\{2, 3, 4, 5, 6\\}, R \in \\{0, 15, 30, .., 345, 360\\}$.
 
 :hourglass: This step takes about 5 minutes.
 
