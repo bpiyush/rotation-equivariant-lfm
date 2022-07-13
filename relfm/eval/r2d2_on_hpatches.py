@@ -73,7 +73,7 @@ def plot_qualitative_results(
 
 
 def plot_quantitative_results(results, ransac, save=True, show=False):
-    fig, ax = plt.subplots(1, 1, figsize=(14, 8))
+    fig, ax = plt.subplots(1, 1, figsize=(14, 9))
 
     ax.grid(alpha=0.5)
     # ax.set_ylim((0., 1.))
