@@ -79,9 +79,9 @@ def plot_quantitative_results(results, ransac, save=True, show=False):
     # ax.set_ylim((0., 1.))
 
     ransac_suffix = " (RANSAC)" if ransac else ""
-    ax.set_title(f"Rotation-equivariance on HPatches dataset {ransac_suffix}", fontsize=20)
-    ax.set_xlabel("Rotation angle (degrees)", fontsize=17)
-    ax.set_ylabel("Mean matching accuracy (MMA)", fontsize=17)
+    ax.set_title(f"Rotation-equivariance on HPatches dataset {ransac_suffix}", fontsize=24)
+    ax.set_xlabel("Rotation angle (degrees)", fontsize=20)
+    ax.set_ylabel("Mean matching accuracy (MMA)", fontsize=20)
 
     i = 0
     colors = get_colors(num_colors=len(results), palette="terrain")
@@ -114,6 +114,8 @@ def plot_quantitative_results(results, ransac, save=True, show=False):
         raise NotImplementedError(f"Define colors and markers for {len(results)} number of models")
 
     for model_name, mma_avg in results.items():
+        
+        model_name = model_name.replace("$SO(2)$", "SO(2)")
 
         ax.plot(
             list(mma_avg.keys()),

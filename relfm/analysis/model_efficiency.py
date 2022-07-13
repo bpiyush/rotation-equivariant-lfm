@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from relfm.utils.visualize import set_latex_fonts
 
 
-models = ["R2D2", "C-3PO ($C_{4}$)", "C-3PO ($C_{8}$)", "C-3PO ($SO(2)$)"]
+models = ["R2D2", "C-3PO (C$_{4}$)", "C-3PO (C$_{8}$)", "C-3PO (SO(2))"]
 avg_inf_time = [0.022, 0.084, 0.228, 0.192]
 num_of_params = [484387, 1422403, 2827331, 1462339]
 
