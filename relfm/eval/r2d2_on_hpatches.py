@@ -132,7 +132,7 @@ def plot_quantitative_results(results, ransac, save=True, show=False):
         i += 1
         ax.set_xticks(list(mma_avg.keys()))
 
-    ax.legend(fontsize=17, bbox_to_anchor=(1., 0.95), title="Method", title_fontsize=18)
+    ax.legend(fontsize=18, bbox_to_anchor=(1.02, 0.95), title="Method", title_fontsize=20)
 
     if save:
         fig_dir = "./Figures"
