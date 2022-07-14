@@ -5,12 +5,9 @@ Rotation equivariance meets local feature matching.
 
 ## Installation
 
-First, clone the repo:
-<!-- ```bash
-git clone git@github.com:bpiyush/rotation-equivariant-lfm.git
-``` -->
+First, clone (or unzip) the repo:
 ```bash
-git clone https://github.com/bpiyush/rotation-equivariant-lfm.git
+git clone xxxx
 ```
 
 <!-- Next, follow steps in [here](./setup/README.md) to install the packages in a `conda` environment. -->
@@ -33,9 +30,11 @@ Follow steps in [here](./data/README.md) to download and prepare the datasets. A
 > Tip: To use the conda environment on the login node, you will need to run the following commands before activating the environment:
 
 ```bash
+# NOTE: The following three commands are specific to our cluster and may not be needed on your system.
 module purge
 module load 2021
 module load Anaconda3/2021.05
+
 conda activate relfm-v1.0
 ```
 
@@ -108,9 +107,12 @@ You can check out sample images from the dataset.
 
 Activate the environment.
 ```bash
+
+# NOTE: The following three commands are specific to our cluster and may not be needed on your system.
 module purge
 module load 2021
 module load Anaconda3/2021.05
+
 conda activate relfm-v1.0
 # incase it is not already installed
 pip install ipython
@@ -235,21 +237,6 @@ The training steps are similar to those for evaluation. However, you need to dow
     Note that this is only a sample run and will save a model at `/home/$USER/models/r2d2-sample/model.pt`. 
 
 
-## Acknowledgements
-
-We thank the authors of [R2D2](https://github.com/naver/r2d2), [D2-Net](https://dsmn.ml/publications/d2-net.html) and [ESCNN library](https://pypi.org/project/escnn/) for making their code publicly available.
-We thank our TA, [Miltos Kofinas](https://www.uva.nl/en/profile/k/o/m.kofinas/m.kofinas.html), for his guidance and the teaching staff for DL2.
-
-
-## Maintained by
-
-* [Piyush Bagad](https://bpiyush.github.io/)
-* [Danilo de Goede](#)
-* [Paul Hilders](#)
-* [Floor Eijkelboom](#)
-* [Mark Fokkema](#)
-
-:bell: In case you face any issues or have suggestions, kindly create a github issue and we will try to respond as early as possible.
 
 <!-- ## Evaluation pipeline
 
