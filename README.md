@@ -237,7 +237,7 @@ The training steps are similar to those for evaluation. However, you need to dow
 
 ## Acknowledgements
 
-We thank the authors of [R2D2](https://github.com/naver/r2d2), [D2-Net](https://dsmn.ml/publications/d2-net.html) papers for making their code publicly available. We thank our TA, [Miltos Kofinas](https://www.uva.nl/en/profile/k/o/m.kofinas/m.kofinas.html), for his guidance and the teaching staff for DL2.
+We thank the authors of [R2D2](https://github.com/naver/r2d2), [D2-Net](https://dsmn.ml/publications/d2-net.html) and [ESCNN library](https://pypi.org/project/escnn/) for making their code publicly available. We thank our TA, [Miltos Kofinas](https://www.uva.nl/en/profile/k/o/m.kofinas/m.kofinas.html), for his guidance and the teaching staff for DL2.
 
 
 ## Maintained by
