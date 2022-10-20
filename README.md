@@ -3,6 +3,8 @@ Rotation equivariance meets local feature matching.
 
 ![](./Figures/C-3PO-architecture-1.png)
 
+Figure inspired by [R2D2](https://github.com/naver/r2d2).
+
 ## Installation
 
 First, clone (or unzip) the repo:
